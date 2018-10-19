@@ -417,7 +417,7 @@ JHStateMachine.prototype.smSolveStates=function(states) {
 				states0.push(state);
 		} else {
 			for(var s0 in this.smGroups[state])
-				if(!this.smContained(this.smGroups[state][s0]),states0)
+				if(!this.smContained(this.smGroups[state][s0],states0))
 					states0.push(this.smGroups[state][s0]);
 		}
 	}
