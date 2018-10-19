@@ -39,7 +39,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 	this.JoclyUCT = JoclyUCT;
 
 (function() {
-	
+
 	function Node(parent,who) {
 		this.visits=1;							// number of time the node has been visited
 		this.children=null;					// node children if any
@@ -47,13 +47,13 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 		this.parents=[];						// parent nodes
 		if(parent)
 			this.parents.push(parent);
-		this.known=false;						// true if all the node and nodes below have been expanded and all leaves are terminal 
+		this.known=false;						// true if all the node and nodes below have been expanded and all leaves are terminal
 		this.evaluation=0;						// the current minimax value
 		this.staticEvalSum=0;					// the sum of the normalized playouts evaluations
 		this.staticEvalCount=0;				// the number of playouts evaluations
 		this.depth=parent?parent.depth+1:0;		// the node depth
 	}
-	
+
 	Node.prototype={
 		addParent: function(parent) {
 			this.parents.push(parent);
@@ -61,14 +61,14 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 				this.depth=parent.depth+1;
 		}
 	}
-	
+
 	var winnerMap={ // convert from Jocly convention (draw==2)
 		"-1": -1,
 		1: 1,
 		2: 0,
 		0: 0
 	}
-		
+
 	JoclyUCT.startMachine = function(aGame,aOptions) {
 		var loopCount=0;
 		var nodeCount=0;
@@ -109,7 +109,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 
 		/*
 		 * Normalize evaluations to get -1<eval<1
-		 * Handle negative and positive evaluations separately so 0 remains 0 
+		 * Handle negative and positive evaluations separately so 0 remains 0
 		 */
 		var evalMapPositive={
 			v: 0,						// evaluation original value
@@ -121,7 +121,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 			},
 		}
 		var evalMapNegative=JSON.parse(JSON.stringify(evalMapPositive)); // deep copy for the initial negative map
-		
+
 		function NormalizeEval(evaluation) {
 			var evalNode=evalMapPositive;
 			var negative=false;
@@ -163,7 +163,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 				normEval=-normEval;
 			return normEval;
 		}
-		
+
 		/*
 		 * Best evaluation (minimax)
 		 */
@@ -206,7 +206,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 			else
 				return value*2-1;
 		}
-		
+
 		function PropagateEvalParent(node,visits,visited) {
 			if(aGame.mOptions.uctTransposition && !aGame.mOptions.uctIgnoreLoop && (node.sign in visited))
 				return;
@@ -264,7 +264,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 			}
 			if(uctParams.uncertaintyFactor) // tend to do good things now rather than later
 				evaluation*=1-Math.pow(10,-uctParams.uncertaintyFactor)*Math.log(node.depth+1);
-			if(node.evaluation!==evaluation) { 
+			if(node.evaluation!==evaluation) {
 				node.evaluation=evaluation;
 				if(!uctParams.directVisits)
 					node.visits+=visits;
@@ -308,9 +308,9 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 				}
 			}
 		}
-		
+
 		/*
-		 * Propagates known boolean up 
+		 * Propagates known boolean up
 		 */
 		function PropagateKnownParent(node,visited) {
 			if(aGame.mOptions.uctTransposition && !aGame.mOptions.uctIgnoreLoop && (node.sign in visited))
@@ -356,7 +356,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 			}
 			return v;
 		}
-		
+
 		/*
 		 * Runs an iteration
 		 */
@@ -366,7 +366,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 			// Select
 			var board=new (aGame.GetBoardClass())(aGame);
 			board.CopyFrom(aGame.mBoard);
-			
+
 			var pathSign=0; // keep track of the boards we've been through (order doesn't matter)
 			var node=rootNode;
 			var depth=0;
@@ -391,7 +391,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 						var child1=node.children[i];
 						var node1=child1.n;
 						candidateChildren.push(child1);
-						if(node1.who==1 && // maximizing player 
+						if(node1.who==1 && // maximizing player
 							node1.evaluation>alpha)
 							alpha=node1.evaluation;
 						if(node1.who==-1 && // minimizing player
@@ -403,7 +403,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 							break;
 						}
 					}
-					
+
 				} else
 					candidateChildren=node.children;
 				if(aGame.mOptions.uctTransposition && !aGame.mOptions.uctIgnoreLoop) {
@@ -419,7 +419,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 					parentVisitsLog=Math.log(parentVisits);
 				else
 					parentVisitsLog=Math.log(node.visits);
-				
+
 				function PickBestChildren() {
 					for(var i=0;i<candidateChildren.length;i++) {
 						var child1=candidateChildren[i];
@@ -440,9 +440,9 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 						}
 					}
 				}
-				
+
 				/*
-				 * redistribute evaluations uniformly between 0 and 1 (excluded) 
+				 * redistribute evaluations uniformly between 0 and 1 (excluded)
 				 */
 				function PickBestChildrenDistributeEval() {
 
@@ -487,12 +487,12 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 						}
 					}
 				}
-				
+
 				if(uctParams.distributeEval)
 					PickBestChildrenDistributeEval();
 				else
 					PickBestChildren()
-				
+
 				if(bestChildren.length==0) // all child nodes are known
 					return;
 				var child=bestChildren[Math.floor(Math.random()*bestChildren.length)];
@@ -513,7 +513,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 					pathSign^=TransformInteger(board.GetSignature()); // consider the states we have been through but not their order
 				board.mWho=-board.mWho;
 			}
-			
+
 			// Expand
 			if(node==rootNode || node.visits>=uctParams.minVisitsExpand) {
 				if(!board.mMoves || board.mMoves.length==0)
@@ -590,7 +590,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 					if(uctParams.directVisits)
 						for(var i=0;i<nodePath.length;i++)
 							nodePath[i].visits+=uctParams.propagateMultiVisits?board.mMoves.length:1;
-					
+
 					if(known) {
 						node.known=true;
 						PropagateKnown(node);
@@ -646,7 +646,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 						var ev2=a2.evaluation*board.mWho;
 						return ev2-ev1;
 					});
-					
+
 					/*
 					 * Pick the next move in the playout with a preference for the moves that seem the best.
 					 * For instance, with playoutSpread=2, the probability weight to pick the best move is 1/2,
@@ -679,7 +679,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 
 					board=pickedMove.board;
 					aGame.AddVisit(board);
-					signatures.push(board.GetSignature()); // remember the board state signature so it can be removed later 
+					signatures.push(board.GetSignature()); // remember the board state signature so it can be removed later
 					board.mWho=-board.mWho;
 					if(board.mFinished) {
 						result={
@@ -721,13 +721,13 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 				for(var i=0;i<nodePath.length;i++)
 					nodePath[i].visits++;
 		}
-		
+
 		var evalWeights=[];
 		/*
 		 * Update the evaluation weight for the given depth in order to balance evaluation propagation
 		 */
 		function UpdateDepthEval(evaluation,depth) {
-			while(evalWeights.length<=depth) 
+			while(evalWeights.length<=depth)
 				evalWeights.push({
 					count: 0,
 					sum: 0
@@ -737,12 +737,12 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 			weight.count++;
 		}
 		/*
-		 * 
+		 *
 		 */
 		function WeightEval(evaluation,depth) {
 			var weight=evalWeights[depth];
 			if(weight===undefined) { // why does this happen, even if very rare ? :(
-				while(evalWeights.length<depth) 
+				while(evalWeights.length<depth)
 					evalWeights.push({
 						count: 0,
 						sum: 0
@@ -777,7 +777,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 		nodeCount++;
 		if(aGame.mOptions.uctTransposition)
 			uctNodes[aGame.mBoard.GetSignature()]=rootNode;
-		
+
 		var t0=Date.now();
 		var lastProgressPercent=-1;
 		function Run() {
@@ -820,7 +820,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 				if(uctParams.log) {
 					ReportStats(rootNode);
 				}
-				
+
 				var bestEval=undefined;
 				aGame.mBestMoves=[];
 				if(uctParams.pickMove=="maxvisits" && uctParams.directVisits) {
@@ -838,7 +838,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 								if(bestEval===undefined || bestEval<child.f)
 									aGame.mBestMoves=[];
 								bestEval=child.f;
-								aGame.mBestMoves.push(child.m);													
+								aGame.mBestMoves.push(child.m);
 							}
 						}
 					}
@@ -865,7 +865,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 								aGame.mBestMoves=[];
 							}
 							bestEval=node.evaluation*rootNode.who;
-							aGame.mBestMoves.push(child.m);						
+							aGame.mBestMoves.push(child.m);
 						}
 					}
 				}
@@ -874,7 +874,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 			}
 		}
 		Run();
-	
+
 		function ReportStats(node) {
 			console.log("  duration",Date.now()-t0);
 			console.log("  evaluation:",node.evaluation);
@@ -915,7 +915,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 				console.log("Minimax tree");
 				ShowMinimax(node,0);
 			}
-			
+
 			if(uctParams.checkSide) {
 				var checkSideNodeCount=0;
 				var checkSideError=0;
@@ -927,7 +927,7 @@ if(typeof WorkerGlobalScope == 'undefined' && typeof SystemJS == 'undefined') {
 							if(child1.n.who!=-node.who)
 								checkSideError++;
 							CheckSide(child1.n);
-						}				
+						}
 				}
 				CheckSide(rootNode);
 				console.log("  tree side alternance","node",checkSideNodeCount,"errors",checkSideError);

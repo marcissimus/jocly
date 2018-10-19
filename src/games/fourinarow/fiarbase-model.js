@@ -104,14 +104,14 @@ Model.Board.InitialPosition = function(aGame) {
 			this.cols[col]++;
 			this.tuples[who]++;
 			this.zSign=aGame.zobrist.update(this.zSign,"board",who,pos);
-			
+
 			var pos=i*width+width-1;
 			var who=(i%2)?1:-1;
 			var col=width-1;
 			this.board[pos]=who;
 			this.cols[col]++;
 			this.tuples[who]++;
-			this.zSign=aGame.zobrist.update(this.zSign,"board",who,pos);		
+			this.zSign=aGame.zobrist.update(this.zSign,"board",who,pos);
 		}
 	}
 }
@@ -137,7 +137,7 @@ Model.Board.GenerateMoves = function(aGame) {
 		this.mFinished=true;
 		this.mWinner=JocGame.DRAW;
 	}
-		
+
 }
 
 Model.Board.Evaluate = function(aGame) {
@@ -194,7 +194,7 @@ Model.Board.ApplyMove = function(aGame,move) {
 				this.tuples[counter[1]]++;
 			else if(counter[-1]>0 && counter[1]==0)
 				this.tuples[-counter[-1]]++;
-		}		
+		}
 		this.board[pos]=this.mWho;
 		this.cols[c]++;
 		this.zSign=aGame.zobrist.update(this.zSign,"board",this.mWho,pos);
@@ -224,7 +224,7 @@ Model.Board.ApplyMove = function(aGame,move) {
 				whoAbove=this.board[pos1];
 			this.zSign=aGame.zobrist.update(this.zSign,"board",this.board[pos],pos);
 			if(whoAbove)
-				this.zSign=aGame.zobrist.update(this.zSign,"board",whoAbove,pos);			
+				this.zSign=aGame.zobrist.update(this.zSign,"board",whoAbove,pos);
 			this.board[pos]=whoAbove;
 		}
 		this.cols[move.col]--;
@@ -266,5 +266,5 @@ Model.Board.CopyFrom = function(aBoard) {
 
 Model.Board.GetSignature = function() {
 	return this.zSign;
-}	
+}
 

@@ -1,6 +1,6 @@
 
 (function() {
-	
+
 	View.Game.cbDefineView = function() {
 
 		return {
@@ -18,17 +18,17 @@
 	     		".#.#.#.#",
 	     		"#.#.#.#.",
 	     		".#.#.#.#",
-	     		"#.#.#.#.",				
+	     		"#.#.#.#.",
 			],
 			board: {
 				"2d": {
-					draw: this.cbDrawBoardFn(this.cbGridBoardClassic2DNoMargin),										
+					draw: this.cbDrawBoardFn(this.cbGridBoardClassic2DNoMargin),
 				},
 				"skin2dfull": {
-					draw: this.cbDrawBoardFn(this.cbGridBoardClassic2DNoMargin),										
+					draw: this.cbDrawBoardFn(this.cbGridBoardClassic2DNoMargin),
 				},
 				"3d": {
-					display: this.cbDisplayBoardFn(this.cbGridBoardClassic3DMargin),					
+					display: this.cbDisplayBoardFn(this.cbGridBoardClassic3DMargin),
 				},
 			},
 			clicker: {
@@ -59,7 +59,7 @@
 							width:1600,
 							height:1600
 						},
-						this.cbStauntonWoodenPieceStyle()["default"]["2d"]),		
+						this.cbStauntonWoodenPieceStyle()["default"]["2d"]),
 					"skin2dfull": {
 						width: 1400,
 						height: 1400,
@@ -76,5 +76,5 @@
 		else
 			return (zFrom+zTo)/2;
 	}
-	
+
 })();

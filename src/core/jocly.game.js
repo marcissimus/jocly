@@ -63,10 +63,10 @@ JocGame.MOUSEMOVE_EVENT="touchmove mousemove";
 JocGame.MOUSEDOWN_EVENT="touchstart mousedown";
 JocGame.MOUSEUP_EVENT="touchend mouseup joclyclick";
 
-/* biggest integer with unit precision: 
-   Math.pow(2,53)-1 < Math.pow(2,53) is true 
+/* biggest integer with unit precision:
+   Math.pow(2,53)-1 < Math.pow(2,53) is true
    Math.pow(2,54)-1 < Math.pow(2,54) is false */
-JocGame.MAX_VALUE = Math.pow(2,53); 
+JocGame.MAX_VALUE = Math.pow(2,53);
 
 JocGame.prototype = {}
 
@@ -232,13 +232,13 @@ JocGame.prototype.AttachElement = function (element, options) {
 
 			var defaultViewOptions = game.mViewOptions && game.mViewOptions.defaultOptions;
 			if(defaultViewOptions) {
-			    const optDefs = {
-                    "mSkin": "skin",
-                    "mNotation": "notation",
-                    "mSounds": "sounds",
-                    "mShowMoves": "moves",
-                    "mAutoComplete": "autocomplete"
-                }
+				const optDefs = {
+					"mSkin": "skin",
+					"mNotation": "notation",
+					"mSounds": "sounds",
+					"mShowMoves": "moves",
+					"mAutoComplete": "autocomplete"
+				}
 				for(var opt in optDefs)
 					if(typeof defaultViewOptions[optDefs[opt]]!="undefined")
 						game[opt] = defaultViewOptions[optDefs[opt]];
@@ -369,7 +369,7 @@ JocGame.prototype.PlaySound = function(tag) {
 			this.mNeedPhonegapMedia=false;
 			this.mNeedPhonegapMedia = window && window.cordova && (typeof Media != "undefined");
 		}
-		
+
 		if(this.mNeedPhonegapMedia) {
 			if(typeof this.mPhonegapMediaLib=="undefined")
 				this.mPhonegapMediaLib={};
@@ -382,7 +382,7 @@ JocGame.prototype.PlaySound = function(tag) {
 				}
 				if(node) {
 					var src=node.getAttribute("src");
-					
+
 					var m=/^([^#\?]*)\/[^#\?]+/.exec(window.location.pathname);
 					if(m)
 						src=src.replace(/^\./,m[1]);
@@ -454,7 +454,7 @@ JocGame.prototype.GetWho = function() {
 
 JocGame.prototype.HumanTurn = function() {
 	if(!this.mBoard.mMoves || this.mBoard.mMoves.length==0) {
-		this.mCurrentLevel=-1; 
+		this.mCurrentLevel=-1;
 		this.mBoard.GenerateMoves(this);
 	}
 	this.mBoard.HumanTurn(this);
@@ -533,7 +533,7 @@ JocGame.prototype.StartMachine = function(aOptions) {
 	engdbg_loops=0;
 	engdbg_time=0;
 	engdbg_t0=Date.now();
-	
+
 	this.mDoneCallback=aOptions.Done || this.MachineMove;
 	this.mProgressCallback=aOptions.Progress || this.MachineProgress;
 	if(typeof(aOptions.level)!="undefined")
@@ -558,13 +558,13 @@ JocGame.prototype.StartMachine = function(aOptions) {
 			return;
 		}
 	}
-	
+
 	if(this.mOptions.levelOptions) {
 		this.mOptions.levelOptionsSaved=JSON.parse(JSON.stringify(this.mOptions.levelOptions));
 		if(aOptions.level)
 			Object.assign(this.mOptions.levelOptions,aOptions.level);
 	}
-	
+
 	var aiThread = aOptions.threaded && typeof window=="object" && window.Worker;
 	if(aOptions.level && aOptions.level.ai=="uct" && JoclyUCT) {
 		if(aiThread)
@@ -645,7 +645,7 @@ JocGame.prototype.ScheduleStep = function() {
 JocGame.prototype.Random = function(roof) {
 	var value;
 	if(this.mRandomSeed)
-		value = this.mRandomSeed % roof; 
+		value = this.mRandomSeed % roof;
 	else
 		value = Math.floor(Math.random()*roof);
 	return value;
@@ -708,7 +708,7 @@ JocGame.prototype.Run = function() {
 		} else if (this.mNextSchedule) {
 			JocUtil.schedule(this, "Run", {});
 		}
-	} catch(e) { 
+	} catch(e) {
 		JocLog("JocGame.Run "+e+"\n"+e.stack);
 	}
 	var t1=Date.now();
@@ -747,7 +747,7 @@ JocGame.prototype.Engine = function(aBoard, aLevel, aBAlpha, aAlpha, aPotential)
 
 	context.mBoard.mFinished = false;
 	context.mBoard.mWinner = JocGame.DRAW;
-	this.mCurrentLevel=aLevel; 
+	this.mCurrentLevel=aLevel;
 	if(typeof context.mBoard.mMoves == "undefined")
 		context.mBoard.mMoves = [];
 	if(context.mBoard.mMoves.length==0)
@@ -761,7 +761,7 @@ JocGame.prototype.Engine = function(aBoard, aLevel, aBAlpha, aAlpha, aPotential)
 			context.mBoard.mFinished=true;
 		}
 	}
-		
+
 	//JocLog("No possible move level "+aLevel+" from "+JSON.stringify(context.mBoard));
 	if(context.mBoard.mFinished) {
 		switch (context.mBoard.mWinner) {
@@ -781,7 +781,7 @@ JocGame.prototype.Engine = function(aBoard, aLevel, aBAlpha, aAlpha, aPotential)
 		exploFrom: this.mExploredCount,
 		exploTo: this.mExploredCount+aPotential,
 	}
-	
+
 	if(context.mBoard.QuickEvaluate) {
 		var boardsMoves=[];
 		for(var i in context.mBoard.mMoves) {
@@ -829,7 +829,7 @@ JocGame.prototype.ExecuteStep = function() {
 			var topStep=1/topContext.mBoard.mMoves.length;
 			percent=Math.floor(100*(topContext.mMoveIndex*topStep+(context.mMoveIndex*topStep/context.mBoard.mMoves.length)));
 		}
-		if(percent!=null) 
+		if(percent!=null)
 			try {
 				this.mProgressCallback(percent);
 			} catch(e) {}
@@ -839,10 +839,10 @@ JocGame.prototype.ExecuteStep = function() {
 	nextBoard.mFinished = false;
 	nextBoard.mWinner = 0;
 	nextBoard.Evaluate(this,context.mLevel==0,false,this);
-	
+
 	if(context.mLevel<0) // random mode
 		nextBoard.mEvaluation=0;
-	
+
 	// JocLog("Eval2 "+nextBoard.mFinished+"/"+nextBoard.mWinner+"/"+nextBoard.mEvaluation);
 	if (nextBoard.mFinished) {
 		switch (nextBoard.mWinner) {
@@ -861,7 +861,7 @@ JocGame.prototype.ExecuteStep = function() {
 	} else if (context.mLevel > 0) {
 		var potential=(context.mExploCtrl.exploTo-this.mExploredCount)/context.mBoard.mMoves.length;
 		//JocLog("ExecuteStep",potential,context.mLevel,context.mExploCtrl);
-		if(potential>=1) { 
+		if(potential>=1) {
 			nextBoard.mWho = -nextBoard.mWho; // player changes
 			this.Engine(nextBoard, context.mLevel - 1, (context.mMoveIndex != 0),
 					context.mBestEvaluation,potential); // recurse algo
@@ -910,7 +910,7 @@ JocGame.prototype.ExecuteStep2 = function() {
 	if (context.mBAlpha) { // alpha-beta pruning
 		if ((context.mBoard.mWho == JocGame.PLAYER_A && context.mBestEvaluation > context.mAlpha)
 				|| (context.mBoard.mWho == JocGame.PLAYER_B && context.mBestEvaluation < context.mAlpha)) {
-			context.mMoveIndex = context.mBoard.mMoves.length - 1; 
+			context.mMoveIndex = context.mBoard.mMoves.length - 1;
 			//JocLog("Alpha-beta pruned level");
 			// ensure no more looking for other moves at this level
 		}
@@ -1030,7 +1030,7 @@ JocGame.prototype.ExportInitialBoardState = function(format) {
 		}
 	} catch(e) {
 		return null;
-	}	
+	}
 }
 
 JocGame.prototype.Load = function(gameData) {
@@ -1067,7 +1067,7 @@ JocGame.prototype.Load = function(gameData) {
 	for(var i in moves) {
 		var move=new (this.GetMoveClass())(moves[i]);
 		if(!this.IsValidMove(move))
-			throw "invalid-move";		
+			throw "invalid-move";
 		this.mBoard.ApplyMove(this,move);
 		this.HandleRepeat(this.mBoard);
 		this.mBoard.mWho=-this.mBoard.mWho;
@@ -1168,7 +1168,7 @@ JocBoard.prototype.ShowEnd = function() {
 }
 
 JocBoard.prototype.MakeAndApply = function(aGame,aIndex) {
-	var board = new (aGame.GetBoardClass())(aGame);	
+	var board = new (aGame.GetBoardClass())(aGame);
 	board.CopyFrom(this);
 	board.mWho = this.mWho;
 	board.mBoardClass = this.mBoardClass;
@@ -1365,7 +1365,7 @@ JocGame.Zobrist.prototype={
 			var seeds=seed.seeds[arguments[3]];
 			if(seeds===undefined) {
 				console.error("Undeclared Zobrist array index",arguments[3],"as param",name);
-				return 0;				
+				return 0;
 			}
 			zobrist^=seeds[vIndex];
 			//console.log("Zobrist",zobrist0,"=>",name,"array[",arguments[2],"] =",arguments[3],"=>",zobrist);

@@ -15,7 +15,7 @@ function RunMatch(match, progressBar) {
         match.getTurn()
             .then( (player) => {
                 var promise;
-                if(player==Jocly.PLAYER_A) 
+                if(player==Jocly.PLAYER_A)
                     promise = match.userTurn();
                 else {
                     if(progressBar) {
@@ -33,14 +33,14 @@ function RunMatch(match, progressBar) {
                         })
                         .then( () => {
                             if(progressBar)
-                                progressBar.style.display = "none";            
+                                progressBar.style.display = "none";
                         });
                 }
                 promise.then( () => {
                         return match.getFinished()
                     })
                     .then( (result) => {
-                        if(result.finished)
+                        if(result.finished){
                             NotifyWinner(result.winner);
                         else
                             NextMove();

@@ -80,13 +80,13 @@ function ReceiveMessage(event)
                                     "mSounds": "sounds",
                                     "mShowMoves": "showMoves",
                                     "mAutoComplete": "autoComplete",
-									"mAnaglyph": "anaglyph"
+                                    "mAnaglyph": "anaglyph"
                                 }
-                                for(var o in optDefs) 
+                                for(var o in optDefs)
                                     if(typeof options[optDefs[o]]!="undefined")
                                         match.game[o] = options[optDefs[o]];
-								if(match.game.mViewOptions.switchable)
-									match.game.mViewAs = options.viewAs;
+                                    if(match.game.mViewOptions.switchable)
+                                            match.game.mViewAs = options.viewAs;
                             }
                             match.game.GameInitView();
                             match.game.DisplayBoard();

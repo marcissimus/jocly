@@ -31,7 +31,7 @@ function JocLog() {
 		for(var i=0;i<arguments.length;i++) {
 			var str=arguments[i];
 			if(typeof(str)!="string")
-				str=JSON.stringify(str);		
+				str=JSON.stringify(str);
 			strs.push(""+str);
 		}
 		jQuery("<p/>").text(strs.join(" ")).appendTo(jQuery("#jocly-log"));
@@ -195,7 +195,7 @@ JocUtil.hasCookieSupport=function() {
 			JocUtil.cookieSupport=false;
 	}
 	JocUtil.cookieSupportTested=true;
-	return JocUtil.cookieSupport;	
+	return JocUtil.cookieSupport;
 }
 
 JocUtil.getCookieData=function() {
@@ -239,7 +239,7 @@ JocUtil.setCookieData=function(name,value) {
 		else
 			jocly=JSON.parse(jocly);
 		jocly[name]=value;
-		window.localStorage.setItem("jocly",JSON.stringify(jocly));	
+		window.localStorage.setItem("jocly",JSON.stringify(jocly));
 	}
 }
 
@@ -499,11 +499,11 @@ JocUtil.sha1=function(msg) {
 		case 1:
 			i = msg.charCodeAt(msg_len-1)<<24 | 0x0800000;
 		break;
- 
+
 		case 2:
 			i = msg.charCodeAt(msg_len-2)<<24 | msg.charCodeAt(msg_len-1)<<16 | 0x08000;
 		break;
- 
+
 		case 3:
 			i = msg.charCodeAt(msg_len-3)<<24 | msg.charCodeAt(msg_len-2)<<16 | msg.charCodeAt(msg_len-1)<<8	| 0x80;
 		break;
@@ -715,7 +715,7 @@ MersenneTwister.prototype.genrand_real3 = function() {
 MersenneTwister.prototype.genrand_res53 = function() {
 	var a=this.genrand_int32()>>>5, b=this.genrand_int32()>>>6;
 	return(a*67108864.0+b)*(1.0/9007199254740992.0);
-} 
+}
 
 if (typeof module !== 'undefined' && module.exports) {
 	exports.MersenneTwister = MersenneTwister;

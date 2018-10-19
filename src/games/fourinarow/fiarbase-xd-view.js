@@ -1,9 +1,9 @@
 /*
  *
  * Copyright (c) 2013 - Jocly - www.jocly.com
- * 
+ *
  * This file is part of the Jocly game platform and cannot be used outside of this context without the written permission of Jocly.
- * 
+ *
  */
 
 (function() {
@@ -17,23 +17,23 @@
 	var CELLTHICKNESS=.1;
 	var connect4Color;
 	var BLENDER2WORLD;//=1000;
-	var bTorus; 
+	var bTorus;
 	var alpha,R;
 	var nbBackLights;
 	var lightsR;
 	var backLightIntensity;
-	
+
 	function colOrientation(c,step,deg){
 		var angle=step==0?0:Math.PI;
 		if (bTorus) angle+=(-c*alpha);
 		if (deg) angle=angle*180/Math.PI;
 		return angle;
-	}			
-	
+	}
+
 	View.Game.fiarCoord2d = function(c,r) {
 		return [(c+.5)*SIZE-full2dWidth/2,((this.mOptions.height-1)/2-r)*SIZE];
 	}
-	
+
 	View.Game.fiarCoord3d = function(c,r,offset) {
 		var x,y,z;
 		var rotZ=0;
@@ -51,14 +51,14 @@
 		}
 		return [x,y,z,rotZ];
 	}
-	
+
 	View.Game.xdInit = function(xdv) {
 		SIZE=Math.ceil(12000/(Math.max(this.mOptions.width,this.mOptions.height)));
 		full2dWidth=SIZE*this.mOptions.width;
 		full2dHeight=SIZE*this.mOptions.height;
 		fullPath=this.mViewOptions.fullPath;
 		bTorus=this.mOptions.torus;
-		
+
 		// 3d data
 		BLENDER2WORLD=1000;
 		NBCOLS=this.mOptions.width;
@@ -78,11 +78,11 @@
 						create: function() {
 							var backlight = new THREE.SpotLight( 0xbbbbbb, backLightIntensity );
 							backlight.castShadow = bTorus?false:true;
-							
+
 							backlight.shadow.camera.near= bTorus?30:15;
 							backlight.shadow.camera.far = bTorus?40:35;
 							backlight.shadow.camera.fov = bTorus?60:70;
-							
+
 							backlight.shadow.mapSize.width = 4096;
 							backlight.shadow.mapSize.height= 4096;
 
@@ -91,7 +91,7 @@
 							target.position.set(
 								-lightsR*Math.cos(i*(2*Math.PI)/nbBackLights),
 								0,
-								-lightsR*Math.sin(i*(2*Math.PI)/nbBackLights)	
+								-lightsR*Math.sin(i*(2*Math.PI)/nbBackLights)
 							);
 							object3d.add(target);
 							backlight.target = target;
@@ -109,8 +109,8 @@
 				});
 			})(i);
 		}
-		
-				
+
+
 		// standard board
 
 		function moveCellFlat(c,r,mesh,step){
@@ -127,53 +127,53 @@
 
 			var r=R*Math.cos(alpha/2);
 			r=r-step*(interspace+CELLTHICKNESS);
-			
+
 			mesh.position.x=r*Math.cos(c*alpha);
 			mesh.position.z=r*Math.sin(c*alpha);
-			
+
 			//mesh.rotation.y=step==0?0:Math.PI;
 			//mesh.rotation.y+=(-c*alpha);
 			mesh.rotation.y=colOrientation(c,step);
 
-			
+
 			if (step>0) mesh.scale.z = 1-interspace*Math.tan(alpha/2);
-		}					
+		}
 		var moveCell = bTorus?moveCellTorus:moveCellFlat;
-						
+
 		xdv.createGadget("board3d",{
 			"3d": {
 				type: "custommesh3d",
 				create: function(callback){
-				
+
 					var parentObject = new THREE.Object3D();//create an empty container
-					
+
 					var nbCells=NBCOLS*NBROWS;
-					
+
 					var resCount=4; // cell+ring+foot+board xtras
 					var childObjects=[];
-					
+
 					function checkLoaded(){
-						if (--resCount==0){		
+						if (--resCount==0){
 							for (var n=0 ; n < childObjects.length ; n++) {
 								parentObject.add(childObjects[n]);
 							}
 							callback(parentObject);
 						}
 					}
-					
-					var matBlueFlat = new THREE.MeshPhongMaterial( { 
-						wireframe: false , 
+
+					var matBlueFlat = new THREE.MeshPhongMaterial( {
+						wireframe: false ,
 						shading: THREE.FlatShading ,
 						color: connect4Color,
 						specular: 0x111111,
 						shininess:40,
 					} ) ;
 
-					
+
 					var $this=this;
 					var smooth=0;
-					var url="smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/connect4cell.js";	
-					this.getResource(url,function(geometry , materials){						
+					var url="smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/connect4cell.js";
+					this.getResource(url,function(geometry , materials){
 						for (var step=0 ; step < 2 ; step++){
 							for (var r = 0 ; r < NBROWS ; r++){
 								for (var c = 0 ; c < NBCOLS ; c++ ){
@@ -188,13 +188,13 @@
 						checkLoaded();
 					});
 					smooth=0;
-					url="smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/connect4cell-ring-smoothed.js";	
-					this.getResource(url,function(geometry , materials){						
+					url="smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/connect4cell-ring-smoothed.js";
+					this.getResource(url,function(geometry , materials){
 						for (var step=0 ; step < 2 ; step++){
 							for (var r = 0 ; r < NBROWS ; r++){
 								for (var c = 0 ; c < NBCOLS ; c++ ){
-									var mesh = new THREE.Mesh( geometry , new THREE.MeshPhongMaterial( { 
-												wireframe: false , 
+									var mesh = new THREE.Mesh( geometry , new THREE.MeshPhongMaterial( {
+												wireframe: false ,
 												shading: THREE.SmoothShading ,
 												color: connect4Color,
 												specular: 0x333333,
@@ -209,8 +209,8 @@
 						checkLoaded();
 					});
 					smooth=0;
-					url="smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/connect4cell-foot.js";	
-					this.getResource(url,function(geometry , materials){						
+					url="smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/connect4cell-foot.js";
+					this.getResource(url,function(geometry , materials){
 						if (!bTorus){
 							for (var step=0 ; step < 2 ; step++){
 								var mesh = new THREE.Mesh( geometry , matBlueFlat );
@@ -219,7 +219,7 @@
 								mesh.position.y=(-NBROWS/2+.5)*CELLSIZE;
 								mesh.position.z=z;
 								childObjects.push(mesh);
-								
+
 								var border1=new THREE.Mesh(
 									new THREE.BoxGeometry(.6,CELLSIZE*NBROWS,.2),
 									matBlueFlat);
@@ -248,12 +248,12 @@
 						}
 						checkLoaded();
 					}
-					
+
 					return null;
 				},
-			}	
+			}
 		});
-		
+
 		for(var r=0;r<this.mOptions.height;r++)
 			for(var c=0;c<this.mOptions.width;c++) {
 				var pos=r*this.mOptions.width+c;
@@ -326,7 +326,7 @@
                                 $this.objectReady(mesh);
                             });
 							return null;
-						},						
+						},
 					}
 				});
 				xdv.createGadget("clicker#"+c+"t", {
@@ -347,14 +347,14 @@
 					"3d" : {
 						type: "custommesh3d",
 						create: function(callback){
-							
+
 							var pivot = new THREE.Object3D();//create an empty container
 							//var pivot = new THREE.Mesh(new THREE.CubeGeometry(10,10,10),new THREE.MeshPhongMaterial());//create an empty container
-							
+
 							var gg=new THREE.BoxGeometry((2*CELLTHICKNESS+interspace)*.05,CELLSIZE*NBROWS,CELLSIZE);
-							var mesh = new THREE.Mesh( gg , 
-								new THREE.MeshPhongMaterial( { 
-													wireframe: true , 
+							var mesh = new THREE.Mesh( gg ,
+								new THREE.MeshPhongMaterial( {
+													wireframe: true ,
 													color: Math.random()*0xffffff,
 													shininess:10,
 													transparent: true,
@@ -388,13 +388,13 @@
 						create: function(callback){
 							var group = new THREE.Object3D();//create an empty container
 							var gg=new THREE.BoxGeometry((4*CELLTHICKNESS+interspace)*1.1,CELLSIZE,CELLSIZE);
-							var mesh = new THREE.Mesh( gg , 
-								new THREE.MeshPhongMaterial( { 
-													wireframe: true , 
+							var mesh = new THREE.Mesh( gg ,
+								new THREE.MeshPhongMaterial( {
+													wireframe: true ,
 													color: Math.random()*0xffffff,
 													shininess:250,
 													transparent: true,
-													opacity: 0,													
+													opacity: 0,
 												} ) );
 							mesh.position.z=(c+.5-NBCOLS/2)*CELLSIZE;
 							moveCell(c,0,mesh,0);
@@ -404,7 +404,7 @@
 						},
 					},
 				});
-			})(c);	
+			})(c);
 		}
 
 		function createScreen(videoTexture) {
@@ -412,7 +412,7 @@
 			var smooth=0;
 			this.getResource("smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/stade-screen.js",function(geometry , materials) {
  				var materials0=[];
- 				
+
  				for(var i=0;i<materials.length;i++){
                     if (materials[i].name=="mat.screen"){
 	 					var mat=materials[i].clone();
@@ -428,7 +428,7 @@
                     }
  				}
  				var mesh = new THREE.Mesh( geometry , new THREE.MultiMaterial( materials0 ) );
- 				
+
  				mesh.visible = false;
  				$this.objectReady(mesh);
 			});
@@ -442,7 +442,7 @@
 		var screenAngle=25;
 		xdv.createGadget("videoa",{
 			"3d": {
-				type : "video3d",				
+				type : "video3d",
 				makeMesh: function(videoTexture){
 					return createScreen.call(this,videoTexture);
 				},
@@ -455,7 +455,7 @@
 		});
 		xdv.createGadget("videob",{
 			"3d": {
-				type : "video3d",				
+				type : "video3d",
 				makeMesh: function(videoTexture){
 					return createScreen.call(this,videoTexture);
 				},
@@ -480,8 +480,8 @@
 					css: {
 						"background-color": "#0065d0",
 					}
-					
-				},				
+
+				},
 			});
 		}
 		for(var r=0;r<(this.mOptions.height+1);r++) {
@@ -496,8 +496,8 @@
 					css: {
 						"background-color": "#0065d0",
 					}
-					
-				},				
+
+				},
 			});
 		}
 		if (bTorus){
@@ -510,13 +510,13 @@
 						z : 4,
 						width: SIZE*.08,
 						height: (this.mOptions.height+fillerW)*SIZE,
-						initialClasses: c==0?"fiar-holes-left":"fiar-holes-right",						
-					},				
-				});				
+						initialClasses: c==0?"fiar-holes-left":"fiar-holes-right",
+					},
+				});
 			}
 		}
 	}
-	
+
 	var tokens={},tokenCounter=1;
 
 	View.Game.fiarIsToken = function(c,r) {
@@ -529,7 +529,7 @@
 		if(token)
 			delete tokens[c+"/"+r];
 	}
-	
+
 	View.Game.fiarMoveToken = function(c0,r0,c,r) {
 		var token=tokens[c0+"/"+r0];
 		if(token) {
@@ -537,7 +537,7 @@
 			tokens[c+"/"+r]=token;
 		}
 	}
-	
+
 	View.Game.fiarGetToken = function(xdv,c,r,who) {
 		var token=tokens[c+"/"+r];
 		if(!token) {
@@ -630,7 +630,7 @@
 		});
 		for(var c=0;c<this.mOptions.width;c++){
 			xdv.updateGadget("text#"+c,{
-				base: { 
+				base: {
 					visible: this.mNotation,
 				}
 			});
@@ -659,7 +659,7 @@
 			}
 		}
 	}
-	
+
 	View.Board.xdDisplay = function(xdv, aGame) {
 		var wTokens={};
 		if(this.mFinished)
@@ -693,11 +693,11 @@
 					var coord2d=aGame.fiarCoord2d(c,r);
 					var coord3d=aGame.fiarCoord3d(c,r);
 					var url=fullPath+"/res/xd-view/meshes/connect4";
-					if (this.board[pos]==1) 
+					if (this.board[pos]==1)
 						url+="-red";
 					else
 						url+="-yellow";
-					if (pos in wTokens) 
+					if (pos in wTokens)
 						url+="-star";
 					url+=".png";
 					xdv.updateGadget(token,{
@@ -725,7 +725,7 @@
 			}
 		}
 	}
-	
+
 	View.Board.xdBuildHTStateMachine = function(xdv, htsm, aGame) {
 		var $this=this;
 		function Select() {
@@ -787,14 +787,14 @@
 					aGame.HumanMove({
 						col: args.col,
 						op: '+',
-					});			
+					});
 				});
 			else if(args.op=='-')
 				$this.fiarAnimateOut(xdv,aGame,args.col,$this.cols[args.col]-1,function() {
 					aGame.HumanMove({
 						col: args.col,
 						op: '-',
-					});			
+					});
 				});
 		}
 		htsm.smTransition("S_INIT", "E_INIT", "S_SELECT", [ Select ]);
@@ -802,18 +802,18 @@
 		htsm.smTransition(["S_SELECT","S_ANIMATE"], "E_END", "S_DONE", [ ]);
 		htsm.smEntering("S_DONE",[Clean]);
 	}
-	
+
 	View.Board.xdPlayedMove = function(xdv, aGame, aMove) {
 		if(aMove.op=='+')
 			this.fiarAnimateDrop(xdv,aGame,aMove.col,this.cols[aMove.col]-1,function() {
-				aGame.MoveShown();			
+				aGame.MoveShown();
 			});
 		else if(aMove.op=='-')
 			this.fiarAnimateOut(xdv,aGame,aMove.col,this.cols[aMove.col],function() {
-				aGame.MoveShown();			
+				aGame.MoveShown();
 			});
 	}
-	
+
 	View.Board.fiarAnimateDrop = function(xdv,aGame,c,r,callback) {
 		var token = aGame.fiarGetToken(xdv,c,r,this.mWho);
 		var coord2d=aGame.fiarCoord2d(c,r);
@@ -832,7 +832,7 @@
 				z: NBROWS/2*CELLSIZE*BLENDER2WORLD,
 			}
 		});
-		
+
 		aGame.PlaySound("sound2");
 
 		xdv.updateGadget(token,{
@@ -840,13 +840,13 @@
 				y: coord2d[1],
 			},
 			"3d":{
-				z: coord3d[2],		
+				z: coord3d[2],
 			}
 		},400,function() {
 			callback();
 		});
 	}
-	
+
 	View.Board.fiarAnimateOut = function(xdv,aGame,c,topr,callback) {
 		var animCount=0;
 		var moved=[];
@@ -904,10 +904,10 @@
 						}
 					},600,function() {
 						AnimEnd();
-					});					
+					});
 				}
 			})(i)
 		}
 	}
-	
+
 })();

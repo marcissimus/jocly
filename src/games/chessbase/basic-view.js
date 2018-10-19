@@ -1,8 +1,8 @@
 
 (function() {
-	
+
 	View.Game.cbDefineView = function() {
-		
+
 		return {
 			coords: {
 				"2d": this.cbGridBoard.coordsFn.call(this,this.cbGridBoardClassic2DMargin),
@@ -16,14 +16,14 @@
 	     		".#.#.#.#",
 	     		"#.#.#.#.",
 	     		".#.#.#.#",
-	     		"#.#.#.#.",				
+	     		"#.#.#.#.",
 			],
 			board: {
 				"2d": {
-					draw: this.cbDrawBoardFn(this.cbGridBoardClassic2DMargin),										
+					draw: this.cbDrawBoardFn(this.cbGridBoardClassic2DMargin),
 				},
 				"3d": {
-					display: this.cbDisplayBoardFn(this.cbGridBoardClassic3DMargin),					
+					display: this.cbDisplayBoardFn(this.cbGridBoardClassic3DMargin),
 				},
 			},
 			clicker: {
@@ -39,7 +39,7 @@
 				"default": {
 					"2d": {
 						width: 1200,
-						height: 1200,						
+						height: 1200,
 					},
 					"3d": {
 						scale: [.6,.6,.6],
@@ -56,5 +56,5 @@
 		else
 			return (zFrom+zTo)/2;
 	}
-	
+
 })();

@@ -29,13 +29,13 @@
 
 /*
  * Keys to understand this code
- * 
+ *
  * This script can be executed under various contexts:
  * A. in the browser within the application context
  * B. in the browser within an iframe controlled by the application
  * C. in the browser as a worker for running the AI
  * D. in node.js
- * 
+ *
  * In case A, the Match object can either be:
  * - attached to an element (A1)
  * - not attached (A2)
@@ -45,29 +45,29 @@
  * a base (from jocly.game.js) overloaded by the model (<game-name>_model.js),
  * and possibly by the view (<game-name>_view.js) if there is a need for a UI
  * (case B only).
- * 
+ *
  * In cases A2, B, C and D, the Match object contains 'game', the actual smart object
  * In case A1, it contains property 'iframe' which is an actual iframe running
- * the code as case B. Properties 'game' and 'iframe' should never be set at the 
+ * the code as case B. Properties 'game' and 'iframe' should never be set at the
  * same time.
- * 
+ *
  * Match.attachElement() moves from case A2 to A1, creating an iframe running in
  * in case B and passing the responsability of the actual game object to it.
- * Match.detachElement() (A1 to A2) gets the game back from the iframe and destroys 
+ * Match.detachElement() (A1 to A2) gets the game back from the iframe and destroys
  * the iframe.
- * 
+ *
  * In case B (and only in this case), the Match object has a property 'area'
  * representing the DOM element containing the UI.
  *
  * By convention, Match object method names starts with a lowercase character,
  * the game object with uppercase. Both APIs may have some similarities but
  * are actually different.
- * 
+ *
  * Most Match API methods do the following: check whether we are in case A1,
  * if so, the command/reply is passed/answered to/from the iframe running case B.
  * In all other cases, the action is performed locally using the API of the game
  * object.
- * 
+ *
  */
 
 (function () {
@@ -1016,13 +1016,13 @@
 			return Promise.reject(new Error("resetView(): not supported in node.js"));
 		if (this.game) {
 			var self = this;
-			var supports3D = ( function () { 
-				try { 
-					return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' ); 
-				} 
-				catch( e ) { 
-					return false; 
-				} 
+			var supports3D = ( function () {
+				try {
+					return !! window.WebGLRenderingContext && !! document.createElement( 'canvas' ).getContext( 'experimental-webgl' );
+				}
+				catch( e ) {
+					return false;
+				}
 			} )();
 			return Promise.resolve(
 				this.game.mViewOptions.skins.filter((skin)=>{

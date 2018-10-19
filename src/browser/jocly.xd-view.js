@@ -1050,7 +1050,7 @@ if (window.JoclyXdViewCleanup)
 			if(force || this.options.file!=options.file) {
 				GetResource("image|"+options.file, function(image) {
 					$this.image=image;
-					if($this.displayArgs && $this.options.clipx!==undefined && $this.options.clipy!==undefined && 
+					if($this.displayArgs && $this.options.clipx!==undefined && $this.options.clipy!==undefined &&
 							$this.options.clipwidth!==undefined && $this.options.clipheight!==undefined)
 						$this.drawImage.apply($this,$this.displayArgs);
 				});
@@ -1060,13 +1060,13 @@ if (window.JoclyXdViewCleanup)
 					|| this.options.clipwidth!=options.clipwidth
 					|| this.options.clipheight!=options.clipheight
 					) {
-				if(this.image && options.clipx!==undefined && options.clipy!==undefined && 
+				if(this.image && options.clipx!==undefined && options.clipy!==undefined &&
 						options.clipwidth!==undefined && options.clipheight!==undefined) {
 					this.drawImage.call(this,force,options);
-				} else 
+				} else
 					this.displayArgs=arguments;
 			}
-			if(this.image && options.clipx!==undefined && options.clipy!==undefined && 
+			if(this.image && options.clipx!==undefined && options.clipy!==undefined &&
 					options.clipwidth!==undefined && options.clipheight!==undefined)
 				this.drawImage.apply(this,arguments);
 			else
@@ -1082,10 +1082,10 @@ if (window.JoclyXdViewCleanup)
 			var y1=0;
 			var cx1=parseInt(this.aWidth+.5);
 			var cy1=parseInt(this.aHeight+.5);
-			
+
 			this.canvasContext.scale(cx1,cy1);
 			this.canvasContext.imageSmoothingEnabled=true;
-        	
+
 			this.canvasContext.drawImage(this.image,x0,y0,cx0,cy0,x1,y1,1,1);
 			//this.canvasContext.drawImage(this.image,x0,y0,cx0,cy0,x1,y1,cx1,cy1);
 			this.canvasContext.restore();
@@ -1249,7 +1249,7 @@ if (window.JoclyXdViewCleanup)
 				}
 			}
 			/*
-			if(force || 
+			if(force ||
 					options.holdClick != this.options.holdClick) {
 				if(this.options.holdClick)
 					this.object3d.off("holdclick");
@@ -1401,7 +1401,7 @@ if (window.JoclyXdViewCleanup)
 						}
 						g.computeVertexNormals();
 						g.computeFaceNormals();
-						g.applyMatrix(new THREE.Matrix4().makeScale( options.scale[0], options.scale[2], options.scale[1] ) );						
+						g.applyMatrix(new THREE.Matrix4().makeScale( options.scale[0], options.scale[2], options.scale[1] ) );
 					}*/
 				}
 			}
@@ -1415,7 +1415,7 @@ if (window.JoclyXdViewCleanup)
 				/*
 									if(options.color===null)
 										this.object3d.material.color.setHex(0xffffff);
-									else 
+									else
 										this.object3d.material.color.setHex(options.color);
 				*/
 			}
@@ -2598,7 +2598,7 @@ if (window.JoclyXdViewCleanup)
 
 	View.Game.DestroyView = function () {
 		if (!xdv.game) {
-			Log("!!! InitView", "game already unset");
+			Log("!!! DestroyView", "game already unset");
 			return;
 		}
 		if (resLoadingMask)
@@ -2804,7 +2804,7 @@ if (window.JoclyXdViewCleanup)
 							targetY: threeCtx.cameraControls.camTarget.z / SCALE3D,
 							targetZ: threeCtx.cameraControls.camTarget.y / SCALE3D
 						});
-					else 
+					else
 						reject(new Error("Camera only available on 3D views"));
 					break;
 
@@ -2859,7 +2859,7 @@ if (window.JoclyXdViewCleanup)
 		if(options.direction=="ccw")
 			angle1 = angle0 + 2 * Math.PI;
 		var radius = Math.sqrt((x1-x0)*(x1-x0)+(y1-y0)*(y1-y0));
-		if(threeCtx.dolly) 
+		if(threeCtx.dolly)
 			TWEEN.remove(threeCtx.dolly);
 		var state = {};
 		function StartSpinning() {
@@ -3371,9 +3371,9 @@ if (window.JoclyXdViewCleanup)
 								var rate = Math.round(1000 * renderSum / renderCount) / 1000;
 								var lag = Math.round(1000 * (window.performance.now() - timestamp)) / 1000;
 								/*
-                                console.log("fps",statsTic,"render",rate,"ms","",
-                                            "lag",lag,"ms","",
-                                            "frame backlog",frameBacklog);
+								console.log("fps",statsTic,"render",rate,"ms","",
+										"lag",lag,"ms","",
+										"frame backlog",frameBacklog);
 								*/
 								$(statsPanel).text("fps " + statsTic);
 							}
@@ -3411,8 +3411,8 @@ if (window.JoclyXdViewCleanup)
 							ctx.harbor.quaternion.copy(ctx.defaultHarborQuaternion);
 						}
 						/*
-                        if(gamepads)
-                            gamepads.clearAll();
+						if(gamepads)
+							gamepads.clearAll();
 						*/
 						if (!arStream) {
 							cameraControls.update();
@@ -3514,6 +3514,9 @@ if (window.JoclyXdViewCleanup)
 			}
 
 			function MakeButton() {
+				ctx.vrButton = document.getElementById("vr-button");
+				if(ctx.vrButton) return;
+
 				ctx.vrButton = document.createElement("img");
 				ctx.vrButton.className = "vr-button";
 				ctx.vrButton.setAttribute("data-vr-enter-src", aGame.config.baseURL + "res/vr/vr-enter.png");

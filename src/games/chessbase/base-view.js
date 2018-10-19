@@ -4,13 +4,13 @@
 (function() {
 
 	var cbVar, cbView, currentGame;
-	
+
 	View.Game.cbTargetMesh = "/res/ring-target.js";
 	View.Game.cbTargetSelectColor = 0xffffff;
 	View.Game.cbTargetCancelColor = 0xff8800;
 
 	View.Game.cbPromoSize = 2000;
-	
+
 	View.Game.xdInit = function(xdv) {
 
 		this.g.fullPath=this.mViewOptions.fullPath;
@@ -25,21 +25,21 @@
 		this.cbCreatePromo(xdv);
 		this.cbCreatePieces(xdv);
 		this.cbCreateCells(xdv);
-	}	
-	
+	}
+
 	// useful to initialize pieces and board while the real meshes aren't loaded yet
 	View.Game.cbMakeDummyMesh = function(xdv) {
 		if(typeof THREE != "undefined")
-		    return new THREE.Mesh( new THREE.CubeGeometry( .0001, .0001, .0001 ), 
+		    return new THREE.Mesh( new THREE.CubeGeometry( .0001, .0001, .0001 ),
 					      new THREE.MeshLambertMaterial() );
 		else
 			return null;
 	}
-	
+
 	View.Game.cbCurrentGame = function() {
 		return currentGame;
 	}
-	
+
 	View.Game.cbCreatePieces = function(xdv) {
 
 		var dummyMesh=this.cbMakeDummyMesh(xdv);
@@ -56,7 +56,7 @@
 					create: function(force,options,delay){
 					    return dummyMesh;
 					},
-				},				
+				},
 			});
 		}
 	}
@@ -82,13 +82,13 @@
 				create: function(force,options,delay){
 				    return dummyMesh;
 				},
-			},				
-		});		
+			},
+		});
 	}
 
 	View.Game.cbCreateCells = function(xdv) {
 		var $this=this;
-		for(var pos=0;pos<this.g.boardSize;pos++) 
+		for(var pos=0;pos<this.g.boardSize;pos++)
 			(function(pos) {
 				xdv.createGadget("cell#"+pos,{
 					"2d": {
@@ -97,7 +97,7 @@
 						initialClasses: $this.cbCellClass(xdv,pos),
 						width: 1300,
 						height: 1300,
-					},					
+					},
 				});
 				xdv.createGadget("clicker#"+pos,$.extend(true,{
 					"2d": {
@@ -112,7 +112,7 @@
 						castShadow: true,
 						smooth : 0,
 						scale:[.9,.9,.9],
-						materials: { 
+						materials: {
 							"square" : {
 								transparent: true,
 								opacity: 0,
@@ -126,7 +126,7 @@
 				},$this.cbView.clicker));
 			})(pos);
 	}
-	
+
 	View.Game.cbCreatePromo = function(xdv) {
 		xdv.createGadget("promo-board",{
 			base: {
@@ -166,7 +166,7 @@
 			});
 		}
 	}
-	
+
 	View.Game.xdBuildScene = function(xdv){
 
 		currentGame=this;
@@ -181,7 +181,7 @@
 				}
 			});
 		}
-		
+
 		xdv.updateGadget("board",$.extend({
 			base: {
 				visible: true,
@@ -200,16 +200,16 @@
 				xdv.updateGadget("clicker#"+pos,displaySpec);
 			})(pos);
 		}
-		
+
 		var scaleScreen=3;
 		var zScreen=3000;
 		var zScreenVignette=1500;
 		var yScreen=10000;
 		var screenAngle=0;
 		var thumbDist=.89;
-		var thumbOffset=5500;		
+		var thumbOffset=5500;
 		var inclination=25;
-		
+
 		xdv.updateGadget("videoa",{
 			"3d": {
 				visible: true,
@@ -257,7 +257,7 @@
 				scale: [scaleScreen/4,scaleScreen/4,scaleScreen/4],
 			},
 		});
-		
+
 		xdv.updateGadget("promo-board",{
 			base: {
 				visible: false,
@@ -276,15 +276,15 @@
 			});
 		};
 	}
-	
+
 	View.Game.cbDisplayBoardFn = function(spec) {
-		
+
 		var $this=this;
-		
+
 		return function(force,options,delay) {
 
 			var key = spec.style+"_"+spec.margins.x+"_"+spec.margins.y+"_"+$this.mNotation+"_"+$this.mViewAs;
-			
+
 			var avat=this;
 			if(key!=this._cbKey){
 				this._cbKey=key;
@@ -300,9 +300,9 @@
 			spec.draw.call(currentGame,spec,this,ctx);
 		}
 	}
-	
+
 	View.Game.cbMakeDisplaySpec = function(pos,side) {
-		var displaySpec={};		
+		var displaySpec={};
 		for(var c in this.cbView.coords) {
 			var coordsFn=this.cbView.coords[c];
 			var coord=coordsFn.call(this,pos);
@@ -321,9 +321,9 @@
 		}
 		return displaySpec;
 	}
-	
+
 	View.Game.cbMakeDisplaySpecForPiece = function(aGame,pos,piece) {
-		var displaySpec=this.cbMakeDisplaySpec(pos,piece.s);		
+		var displaySpec=this.cbMakeDisplaySpec(pos,piece.s);
 		if(cbVar.pieceTypes[piece.t]===undefined) {
 			console.warn("Piece type",piece.t,"not defined in model");
 			return;
@@ -331,7 +331,7 @@
 		var aspect=cbVar.pieceTypes[piece.t].aspect || cbVar.pieceTypes[piece.t].name;
 		if(!aspect) {
 			console.warn("Piece type",piece.t,"has no aspect defined");
-			return;				
+			return;
 		}
 		function BuildSpec(spec,specs,aspect) {
 			if(specs)
@@ -348,7 +348,7 @@
 		}
 		return displaySpec;
 	}
-	
+
 	View.Board.xdDisplay = function(xdv, aGame) {
 		var $this=this;
 		for(var index=0;index<this.pieces.length;index++) {
@@ -369,12 +369,12 @@
 						opacity: 1,
 					},
 					"3d": {
-						positionEasingUpdate: null,												
+						positionEasingUpdate: null,
 					},
 				},displaySpec);
-				
+
 				//console.warn("display",displaySpec);
-					
+
 				xdv.updateGadget("piece#"+index,displaySpec);
 			}
 		}
@@ -385,7 +385,7 @@
 				}
 			});
 	}
-	
+
 	View.Game.cbExtraLights = [{
 		color: 0xffffff,
 		intensity: 0.8,
@@ -398,7 +398,7 @@
 			shadowMapWidth: 2048,
 			shadowMapHeight: 2048,
 		},
-	}]; 
+	}];
 
 	View.Game.cbCreateLights = function(xdv) {
 		var $this = this;
@@ -413,13 +413,13 @@
 							var spotLight1 = new THREE.SpotLight( light.color, light.intensity );
 							//for(var prop in light.props)
 								//spotLight1[prop] = light.props[prop];
-							
+
 							spotLight1.shadow.camera.far = light.props.shadowCameraFar;
 							spotLight1.shadow.camera.near = light.props.shadowCameraNear;
 							spotLight1.shadow.mapSize.width = light.props.shadowMapWidth;
 							spotLight1.shadow.mapSize.height = light.props.shadowMapHeight;
 
-							spotLight1.position.set.apply(spotLight1.position,light.position);	
+							spotLight1.position.set.apply(spotLight1.position,light.position);
 							var mesh=new THREE.Mesh();
 							mesh.add(spotLight1);
 							var target = new THREE.Object3D();
@@ -430,26 +430,26 @@
 						},
 					}
 				});
-				
+
 			})(this.cbExtraLights[i],i);
 		}
 	}
-	
+
 	// 'this' is not a Game but an Avatar object
 	View.Game.cbCreateScreen = function(videoTexture) {
 		// flat screens
 		var gg=new THREE.PlaneGeometry(4,3,1,1);
 		var gm=new THREE.MeshPhongMaterial({color:0xffffff,map:videoTexture,shading:THREE.FlatShading,emissive:{r:1,g:1,b:1}});
 		var mesh = new THREE.Mesh( gg , gm );
-		this.objectReady(mesh); 
+		this.objectReady(mesh);
 		return null;
 	}
-	
+
 	View.Game.cbCreateScreens = function(xdv) {
 		var $this=this;
 		xdv.createGadget("videoa",{
 			"3d": {
-				type : "video3d",				
+				type : "video3d",
 				makeMesh: function(videoTexture){
 					return $this.cbCreateScreen.call(this,videoTexture);
 				},
@@ -457,7 +457,7 @@
 		});
 		xdv.createGadget("videoabis",{
 			"3d": {
-				type : "video3d",				
+				type : "video3d",
 				makeMesh: function(videoTexture){
 					return $this.cbCreateScreen.call(this,videoTexture);
 				},
@@ -465,24 +465,24 @@
 		});
 		xdv.createGadget("videob",{
 			"3d": {
-				type : "video3d",				
+				type : "video3d",
 				makeMesh: function(videoTexture){
 					return $this.cbCreateScreen.call(this,videoTexture);
 				},
 			},
-		});	
+		});
 		xdv.createGadget("videobbis",{
 			"3d": {
-				type : "video3d",				
+				type : "video3d",
 				makeMesh: function(videoTexture){
 					return $this.cbCreateScreen.call(this,videoTexture);
 				},
 			},
 		});
 	}
-	
+
 	View.Board.xdInput = function(xdv, aGame) {
-		
+
 		function HidePromo() {
 			xdv.updateGadget("promo-board",{
 				base: {
@@ -493,9 +493,9 @@
 				base: {
 					visible: false,
 				}
-			});		
+			});
 		}
-		
+
 		return {
 			initial: {
 				f: null,
@@ -515,10 +515,10 @@
 								highlight: function(mode) {
 									xdv.updateGadget("cell#"+move.f,{
 										"2d": {
-											classes: mode=="select"?"cb-cell-select":"cb-cell-cancel",					
+											classes: mode=="select"?"cb-cell-select":"cb-cell-cancel",
 											opacity: aGame.mShowMoves || mode=="cancel"?1:0,
 										}
-									});									
+									});
 									xdv.updateGadget("clicker#"+move.f,{
 										"3d": {
 											materials: {
@@ -530,14 +530,14 @@
 											},
 											castShadow: aGame.mShowMoves || mode=="cancel",
 										},
-									});									
+									});
 								},
 								unhighlight: function() {
 									xdv.updateGadget("cell#"+move.f,{
 										"2d": {
-											classes: "",							
+											classes: "",
 										}
-									});									
+									});
 								},
 								validate: {
 									f: move.f,
@@ -557,10 +557,10 @@
 								highlight: function(mode) {
 									xdv.updateGadget("cell#"+target,{
 										"2d": {
-											classes: mode=="select"?"cb-cell-select":"cb-cell-cancel",					
+											classes: mode=="select"?"cb-cell-select":"cb-cell-cancel",
 											opacity: aGame.mShowMoves || mode=="cancel"?1:0,
 										},
-									});									
+									});
 									xdv.updateGadget("clicker#"+target,{
 										"3d": {
 											materials: {
@@ -572,14 +572,14 @@
 											},
 											castShadow: aGame.mShowMoves || mode=="cancel",
 										},
-									});									
+									});
 								},
 								unhighlight: function(mode) {
 									xdv.updateGadget("cell#"+target,{
 										"2d": {
-											classes: "",							
+											classes: "",
 										}
-									});									
+									});
 								},
 								validate: {
 									t: move.t,
@@ -608,10 +608,10 @@
 													aspectSpec = $.extend(true,aspectSpec,
 															aGame.cbView.pieces[this.mWho]["default"],aGame.cbView.pieces[this.mWho][aspect]);
 												xdv.updateGadget("promo#"+move.pr, {
-													base: $.extend(aspectSpec["2d"], { 
-														x: (index-promoMoves.length/2)*aGame.cbPromoSize 
-													}),														
-												});												
+													base: $.extend(aspectSpec["2d"], {
+														x: (index-promoMoves.length/2)*aGame.cbPromoSize
+													}),
+												});
 											},$this);
 										}
 										callback();
@@ -629,7 +629,7 @@
 												opacity: 1,
 											},
 											"3d": {
-												positionEasingUpdate: null,												
+												positionEasingUpdate: null,
 											},
 										},displaySpec1);
 										xdv.updateGadget("piece#"+move.c,displaySpec1);
@@ -690,8 +690,8 @@
 		else
 			cellClass="classic-cell-white";
 		return "classic-cell "+cellClass;
-	}	
-		
+	}
+
 	View.Board.xdPlayedMove = function(xdv, aGame, aMove) {
 		aGame.mOldBoard.cbAnimate(xdv,aGame,aMove,function() {
 			aGame.MoveShown();
@@ -702,7 +702,7 @@
 		var $this=this;
 		var animCount=1;
 		var tacSound=false;
-		
+
 		function EndAnim() {
 			if(--animCount==0){
 				if(tacSound)
@@ -725,7 +725,7 @@
 				var c=z0;
 				var S1=c-z1;
 				var S2=c-z2;
-				
+
 				if(z1!=(z0+z2)/2)
 					tacSound=true;
 
@@ -750,7 +750,7 @@
 
 		if (!tacSound)
 			aGame.PlaySound("move"+(1+Math.floor(Math.random()*4)));
-		
+
 		xdv.updateGadget("piece#"+piece.i,displaySpec,600,function() {
 			EndAnim();
 		});
@@ -776,7 +776,7 @@
 				"3d": anim3d,
 			},600,EndAnim);
 		}
-		
+
 		if(aMove.cg!==undefined) {
 			var spec=aGame.cbVar.castle[aMove.f+"/"+aMove.cg];
 			var rookTo=spec.r[spec.r.length-1];
@@ -793,7 +793,7 @@
 		return (zFrom+zTo)/2;
 	}
 
-	
+
 })();
 
 
@@ -802,11 +802,11 @@
 
 (function() {
 
-	
+
 	View.Game.cbBaseBoard = {
 
 		TEXTURE_CANVAS_CX: 1024,
-		TEXTURE_CANVAS_CY: 1024,	
+		TEXTURE_CANVAS_CY: 1024,
 
 		// 'this' is a Game object
 		display: function(spec, avatar, callback) {
@@ -829,11 +829,11 @@
 								callback(mesh);
 							});
 						});
-					});					
+					});
 				});
 			});
 		},
-		
+
 		createTextureImages: function(spec,callback) {
 			var $this=this;
 			var images={};
@@ -854,7 +854,7 @@
 					})(ti);
 
 		},
-		
+
 		createMaterial: function(spec,canvas,callback) {
 			var texBoardDiffuse = new THREE.Texture(canvas.diffuse);
 			texBoardDiffuse.needsUpdate = true;
@@ -891,9 +891,9 @@
 		},
 
 		paintChannel: function(spec,ctx,images,channel) {
-			
+
 		},
-		
+
 		draw: function(spec,avatar,ctx) {
 			var $this=this;
 			spec.getResource=avatar.getResource;
@@ -903,10 +903,10 @@
 				//ctx.restore();
 			});
 		},
-		
+
 	}
 
-	
+
 })();
 
 // base piece management
@@ -924,14 +924,14 @@
 		}
 		return h;
 	}
-	
+
 	View.Game.cbDisplayPieceFn = function(styleSpec) {
-		
+
 		var $this=this;
 		var styleSign=Hash(styleSpec);
 
 		return function(force,options,delay){
-			getResource = this.getResource;	
+			getResource = this.getResource;
 			var m=/^piece#([0-9]+)$/.exec(this.gadget.id);
 			if(!m)
 				return null;
@@ -949,18 +949,18 @@
 				avat.options=options;
 				currentGame.cbMakePiece(styleSpec,aspect,piece.s,function(mesh){
 					avat.replaceMesh(mesh,avat.options,delay);
-				});				
+				});
 			}
 		}
 	}
-	
+
 	View.Game.cbMakePiece = function(styleSpec,aspect,side,callback) {
-		
+
 		if(!styleSpec) {
 			console.error("piece-view: style is not defined");
 			return;
 		}
-		
+
 		function BuildSpec(spec,specs,aspect) {
 			if(specs)
 				return $.extend(true,spec,specs['default'],specs[aspect]);
@@ -985,16 +985,16 @@
 					callbacks.forEach(function(callback) {
 						callback(new THREE.Mesh(resources.geometry,resources.material));
 					});
-				});				
+				});
 			});
-		} else 
-			callback(new THREE.Mesh(piece.geometry,piece.material));			
+		} else
+			callback(new THREE.Mesh(piece.geometry,piece.material));
 	}
 
 	View.Game.cbClearPieces = function() {
 		pieces = {};
 	}
-	
+
 	View.Game.cbBasePieceStyle = {
 
 		"default": {
@@ -1037,11 +1037,11 @@
 				}
 				Loaded();
 			},
-			
+
 			loadResources: function(spec,callback) {
 				var nbRes=2;
 				var images, geometry,materials;
-				
+
 				function Loaded() {
 					if(--nbRes==0)
 						callback({
@@ -1068,17 +1068,17 @@
 					Loaded();
 				});
 			},
-						
+
 			displayPiece: function(spec,resources,callback) {
 				spec.makeMaterials.call(this,spec,resources);
 				callback();
 			},
-			
+
 			paintTextureImageClip: function(spec,ctx,material,channel,channelData,imgKey,image,clip,resources) {
 				var cx=ctx.canvas.width;
 				var cy=ctx.canvas.height;
 				if(channelData.patternFill && channelData.patternFill[imgKey]) {
-					var fillKey=channelData.patternFill[imgKey];	
+					var fillKey=channelData.patternFill[imgKey];
 					ctx.save();
 					// use a tmp canvas for painting colored patterns with shape used as mask (alpha channel needed)
 					var tmpCanvas = document.createElement('canvas');
@@ -1094,9 +1094,9 @@
 					ctx.restore();
 				}
 				else
-					ctx.drawImage(image,clip.x,clip.y,clip.cx,clip.cy,0,0,cx,cy);				
+					ctx.drawImage(image,clip.x,clip.y,clip.cx,clip.cy,0,0,cx,cy);
 			},
-			
+
 			paintTextureImage: function(spec,ctx,material,channel,channelData,imgKey,image,resources) {
 				var clip;
 				if(channelData.clipping && channelData.clipping[imgKey])
@@ -1110,7 +1110,7 @@
 					};
 				spec.paintTextureImageClip.call(this,spec,ctx,material,channel,channelData,imgKey,image,clip,resources);
 			},
-			
+
 			paintTexture: function(spec,ctx,material,channel,resources) {
 				//console.log("paintTexture",channel,"for",spec.mesh.jsFile);
 				var channelData=spec.materials[material].channels[channel];
@@ -1119,7 +1119,7 @@
 					spec.paintTextureImage.call(this,spec,ctx,material,channel,channelData,img,image,resources);
 				}
 			},
-			
+
 			makeMaterialTextures: function(spec,material,resources) {
 		    	for (var chan in spec.materials[material].channels) {
 		    		var channel = spec.materials[material].channels[chan];
@@ -1142,9 +1142,9 @@
 	    			spec.makeMaterial.call(this,spec,m,resources);
 		    	}
 			},
-		}		
+		}
 	}
-	
+
 	View.Game.cbTokenPieceStyle3D = $.extend(true,{},View.Game.cbBasePieceStyle,{
 
 		"default": {
@@ -1158,7 +1158,7 @@
 
 		    	var pieceMaterials=[];
 	    		for (var mat in resources.loadedMaterials){
-	    			var newMat=resources.loadedMaterials[mat].clone();	    			
+	    			var newMat=resources.loadedMaterials[mat].clone();
 	    			var matName=newMat.name;
 	    			if (spec.materials[matName]){
 		    			$.extend(true,newMat,spec.materials[matName].params);
@@ -1179,7 +1179,7 @@
 				resources.material=pieceMat;
 			},
 
-			
+
 		},
 	});
 
@@ -1197,16 +1197,16 @@
 					case 'diffuse':
 						phongParams.map = resources.textures[material][chan];
 						break;
-					case 'normal':                        
+					case 'normal':
 						uniforms[ "tNormal" ].value = resources.textures[material][chan];
 						uniforms[ "uNormalScale" ].value.y = chanParams.normalScale || 1;
 						phongParams.normalMap = uniforms[ "tNormal" ].value ;
-						phongParams.normalScale = uniforms[ "uNormalScale" ].value ;                        
+						phongParams.normalScale = uniforms[ "uNormalScale" ].value ;
 					break;
 					default:
 					}
 				}
-				uniforms[ "enableAO" ].value = true;					
+				uniforms[ "enableAO" ].value = true;
 				//uniforms[ "tNormal" ].value = texNorm;
 				//uniforms[ "uNormalScale" ].value.y = cbPieceType.normalScale;
 				if(uniforms[ "uShininess" ] !== undefined)
@@ -1219,19 +1219,19 @@
 				phongParams.normalScale = new THREE.Vector2( ns , ns ) ;
 
 				var pieceMat = new THREE.MeshPhongMaterial( phongParams );
-				
+
 				resources.material=pieceMat;
-				
+
 				resources.geometry.mergeVertices()
 				resources.geometry.computeVertexNormals(); // needed in normals not exported in js file!
 
 			},
 
-			
+
 		}
-		
+
 	});
-	
+
 	View.Game.cbPhongPieceStyle3D = $.extend(true,{},View.Game.cbBasePieceStyle,{
 
 		"default": {
@@ -1248,9 +1248,9 @@
 				resources.material=pieceMat;
 			},
 		}
-		
+
 	});
-	
+
 })();
 
 

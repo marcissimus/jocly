@@ -26,6 +26,7 @@
  */
 
 function JHStateMachine() {
+
 }
 
 JHStateMachine.prototype={}
@@ -72,7 +73,7 @@ JHStateMachine.prototype.smTransition=function(states,events,newState,methods) {
 			}
 			for(var m in methods) {
 				var methodName=methods[m];
-				this.smStates[stateName].transitions[eventName].methods.push(methodName);				
+				this.smStates[stateName].transitions[eventName].methods.push(methodName);
 			}
 		}
 	}
@@ -80,7 +81,7 @@ JHStateMachine.prototype.smTransition=function(states,events,newState,methods) {
 		this.smStates[newState]={
 			transitions: {},
 			enteringMethods: [],
-			leavingMethods: []				
+			leavingMethods: []
 		}
 	}
 }
@@ -103,7 +104,7 @@ JHStateMachine.prototype.smEntering=function(states,methods) {
 		}
 		for(var m in methods) {
 			var methodName=methods[m];
-			this.smStates[stateName].enteringMethods.push(methodName);				
+			this.smStates[stateName].enteringMethods.push(methodName);
 		}
 	}
 }
@@ -126,7 +127,7 @@ JHStateMachine.prototype.smLeaving=function(states,methods) {
 		}
 		for(var m in methods) {
 			var methodName=methods[m];
-			this.smStates[stateName].leavingMethods.push(methodName);				
+			this.smStates[stateName].leavingMethods.push(methodName);
 		}
 	}
 }
@@ -153,7 +154,7 @@ JHStateMachine.prototype.smGetState=function() {
 }
 
 JHStateMachine.prototype.smHandleEvent=function(event,args) {
-	
+
 	if(typeof(this.smStates[this.smState])=="undefined") {
 		console.error("Unknown state '",this.smState,"'");
 		return;
@@ -169,7 +170,7 @@ JHStateMachine.prototype.smHandleEvent=function(event,args) {
 	} catch(e) {
 		//console.error("handleEvent(event,...) JSON.stringify(args): ",e);
 	}
-	
+
 	var transition=this.smStates[this.smState].transitions[event];
 	if(typeof(transition)=="undefined") {
 		console.warn("JHStateMachine: Event '",event,"' not handled in state '",this.smState,"'");
@@ -177,7 +178,7 @@ JHStateMachine.prototype.smHandleEvent=function(event,args) {
 	}
 
 	this.smCurrentEvent=event;
-	
+
 	var stateChanged=(this.smState!=transition.state);
 
 	if(stateChanged) {
@@ -194,10 +195,10 @@ JHStateMachine.prototype.smHandleEvent=function(event,args) {
 						(typeof leavingMethods[i]=="function"?leavingMethods[i].name:leavingMethods[i])
 				+"(",args,"): ",e);
 				throw e;
-			}		
+			}
 		}
 	}
-	
+
 	for(var i in transition.methods) {
 		try {
 			hEntry.methods.push(transition.methods[i]);
@@ -213,7 +214,7 @@ JHStateMachine.prototype.smHandleEvent=function(event,args) {
 			throw e;
 		}
 	}
-	
+
 	this.smJHStateMachineLeavingState(this.smState,event,args);
 
 
@@ -236,18 +237,18 @@ JHStateMachine.prototype.smHandleEvent=function(event,args) {
 						(typeof enteringMethods[i]=="function"?enteringMethods[i].name:enteringMethods[i])
 				+"(",args,"): ",e);
 				throw e;
-			}		
+			}
 		}
 	}
-	
+
 	this.smCurrentEvent=null;
 
 	this.smJHStateMachineEnteringState(this.smState,event,args);
-	
+
 	hEntry.toState=this.smState;
 	this.smHistory.splice(0,0,hEntry);
 	while(this.smHistory.length>50)
-		this.smHistory.pop();	
+		this.smHistory.pop();
 }
 
 JHStateMachine.prototype.smPlay=function() {
@@ -398,7 +399,7 @@ JHStateMachine.prototype.smGetHistoryTable=function() {
 		}
 		table.push("</td>");
 		table.push("<td class='from'>"+hEntry.fromState+"</td>");
-		table.push("</tr>");		
+		table.push("</tr>");
 	}
 	table.push("</table>");
 	return table.join("");
