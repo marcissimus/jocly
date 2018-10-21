@@ -1618,7 +1618,14 @@ if (window.JoclyXdViewCleanup)
 				color: this.options.data,
 				opacity: 0,
 			}
+			if (this.options.side !== undefined)
+				matData.side = this.options.side;
+			if (this.options.transparent !== undefined)
+				matData.transparent = this.options.transparent;
+
 			if (this.options.texture) {
+				var $this = this;
+
 				var tOptions = this.options.texture;
 				if (tOptions.file) {
 					GetMaterialMap(tOptions.file, function (texture) {
@@ -1629,13 +1636,22 @@ if (window.JoclyXdViewCleanup)
 						if (tOptions.repeat)
 							texture.repeat.set.apply(texture.repeat, tOptions.repeat);
 						matData.map = texture;
+
+						var gm;
+						switch ($this.options.material) {
+							case "phong":
+								gm = new THREE.MeshPhongMaterial(matData);
+								break;
+							default:
+								gm = new THREE.MeshBasicMaterial(matData);
+						}
+						var mesh = new THREE.Mesh(gg, gm);
+						$this.objectReady(mesh);
 					});
+
+					return;
 				}
 			}
-			if (this.options.side !== undefined)
-				matData.side = this.options.side;
-			if (this.options.transparent !== undefined)
-				matData.transparent = this.options.transparent;
 			var gm;
 			switch (this.options.material) {
 				case "phong":
