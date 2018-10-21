@@ -1,15 +1,15 @@
 /*
  *
  * Copyright (c) 2013 - Jocly - www.jocly.com
- * 
+ *
  * This file is part of the Jocly game platform and cannot be used outside of this context without the written permission of Jocly.
- * 
+ *
  */
 
 (function() {
-	
+
 	var CLASSIC3D_FLOOR_Z = 1 ;
-	
+
 	function drawAdancedPattern(ctx,img,xCenter,yCenter,cx,cy,fillColor,compMode,rotationDeg){
 		var bInvert
 		var buffCz=512;
@@ -26,45 +26,45 @@
 		// now paste the result in diffuse canvas
         ctx.drawImage(tmpCanvas,0,0,buffCz,buffCz,xCenter-cx/2,yCenter-cy/2,cx,cy);
 	}
-	
+
 	function drawFilledPattern(ctx,img,xCenter,yCenter,cx,cy,fillColor,rotationDeg){
 		drawAdancedPattern(ctx,img,xCenter,yCenter,cx,cy,fillColor,'destination-in',rotationDeg);
 	}
 	function drawInvertedFilledPattern(ctx,img,xCenter,yCenter,cx,cy,fillColor,rotationDeg){
 		drawAdancedPattern(ctx,img,xCenter,yCenter,cx,cy,fillColor,'destination-out',rotationDeg);
 	}
-	
+
 	var currentGame;
-	
+
 	var WIDTH, HEIGHT, SIZE, PCOUNT, SWIDTH;
 	var CLASSIC_WHITE = 0xbbaa99;
 	var CLASSIC_BLACK = 0x222222;
-	
+
 	var colors=["black","red"];
 	var reflexivities=[0.5,0.7];
 	var sphereGeometry, textures, textureCube;
-	
+
 	View.Game.xdInitExtra = function(xdv) {
 	}
 
 	View.Game.xdPreInit = function(xdv) {
 	}
-	
+
 	// useful to initialize pieces and board while the real meshes aren't loaded yet
 	View.Game.chMakeDummyMesh = function(xdv) {
 		if(typeof THREE != "undefined")
-		    return new THREE.Mesh( new THREE.CubeGeometry( .001,.001,.001 ), 
+		    return new THREE.Mesh( new THREE.CubeGeometry( .001,.001,.001 ),
 					      new THREE.MeshLambertMaterial() );
 		else
 			return null;
 	}
-	
+
 	var pieces = {};
-	
+
 	View.Game.chMakeTokenPiece = function(avatar,type,who,callback) {
-		
+
 		var fullPath=this.mViewOptions.fullPath;
-		
+
 		function loadResources(type,who,callback){
 			var bumpMap;
 			var diffuseMap;
@@ -72,7 +72,7 @@
 			var queenMask;
 			var nbRes=4;
 			var TEXTURE_CANVAS_SZ=256;
-			
+
 			function checkLoaded(){
 				nbRes--;
 				if (nbRes==0){
@@ -83,7 +83,7 @@
 							ctx.fillRect(0,0,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
 						}
 					}
-					
+
 					// piecetop
 					var canvasDiffuse=document.createElement('canvas');
 					canvasDiffuse.width=canvasDiffuse.height=TEXTURE_CANVAS_SZ;
@@ -91,12 +91,12 @@
 					var canvasBump=document.createElement('canvas');
 					canvasBump.width=canvasBump.height=TEXTURE_CANVAS_SZ;
 					var textureBump =  new THREE.Texture(canvasBump);
-					
-					
+
+
 					var ctx=canvasDiffuse.getContext("2d");
 					ctx.drawImage(diffuseMap,0,0,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
 					blackenCtxIfNeeded(ctx);
-					
+
 					if (type==1)
 						drawFilledPattern(ctx,queenMask,
 							TEXTURE_CANVAS_SZ/2,TEXTURE_CANVAS_SZ/2,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ,
@@ -105,10 +105,10 @@
 
 					var ctxBump=canvasBump.getContext("2d");
 					ctxBump.drawImage(bumpMap,0,0,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
-					
+
 					textureDiff.needsUpdate=true;
 					textureBump.needsUpdate=true;
-					
+
 					// piece border
 					var canvasDiffuseB=document.createElement('canvas');
 					canvasDiffuseB.width=canvasDiffuseB.height=TEXTURE_CANVAS_SZ;
@@ -117,8 +117,8 @@
 					ctxB.drawImage(diffuseMap,0,0,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
 					blackenCtxIfNeeded(ctxB);
 					textureDiffB.needsUpdate=true;
-					
-					
+
+
 					var specular="#050505",shininess=50,color=0xdddddd;
 					if (who<0) {
 						specular="#111111";
@@ -137,11 +137,11 @@
 						specular:specular,
 						shininess:shininess,
 						map:textureDiffB});
-					
+
 					var pieceMat=new THREE.MultiMaterial([matborder,mattop]);
-					
+
 					callback({geometry:pieceGeo,material:pieceMat});
-					
+
 				}
 			}
 
@@ -167,10 +167,10 @@
 					checkLoaded();
 				});
 		}
-				
-				
+
+
 		var key="_"+type+"_"+who+"_";
-			
+
 		var piece=pieces[key];
 		if(Array.isArray(piece))
 			piece.push(callback);
@@ -186,26 +186,65 @@
 					callback(new THREE.Mesh(resources.geometry,resources.material));
 				});
 			});
-		} else 
-			callback(new THREE.Mesh(piece.geometry,piece.material));				
+		} else
+			callback(new THREE.Mesh(piece.geometry,piece.material));
 	}
 
+	View.Game.cbCreateEndScreen = function(xdv) {
+		var $this=this;
+		var states = ["win", "lose", "draw"];
+		for(var i in states) {
+			xdv.createGadget("endscreen-" + states[i],{
+				"3d": {
+					type: "plane3d",
+					x: 0,
+					y: -7000,
+					z: 3000,
+					sx: 20000.0,
+					sy: 5000.0,
+					material: "basic",
+					texture: {
+						file: $this.mViewOptions.fullPath + "/res/end-" + states[i] + ".png",
+					},
+					side: THREE.DoubleSide,
+					scale:[1,1,1],
+					transparent: true,
+					color: "#ffffff",
+					data: "#ffffff",
+				}
+			});
+		}
+	}
+
+	View.Board.xdShowEnd=function(xdv, aGame) {
+		var message = "endscreen-draw";
+		var winner = aGame.mBoard.mWinner;
+
+		if(winner === JocGame.PLAYER_A)
+			message = "endscreen-win";
+		else if(winner === JocGame.PLAYER_B)
+			message = "endscreen-lose";
+
+		xdv.updateGadget(message,{"3d":{visible:true}});
+
+		return false;
+	}
 
 	View.Game.xdInit = function(xdv) {
-				
+
 		var $this=this;
-		
+
 		this.g.getColumn=function(c,r) {
-			return 2*c+(r%2);			
+			return 2*c+(r%2);
 		}
 		this.g.dimensions={
-			width: this.mOptions.width, 
-			squareWidth: 2*this.mOptions.width, 
-			height: this.mOptions.height, 
+			width: this.mOptions.width,
+			squareWidth: 2*this.mOptions.width,
+			height: this.mOptions.height,
 		}
 
 		this.xdPreInit();
-		
+
 		var fullPath=this.mViewOptions.fullPath;
 		var lightcellDistance=this.g.lightcellDistance;
 		var INITIAL=this.mOptions.initial;
@@ -213,10 +252,12 @@
 		SWIDTH=this.g.dimensions.squareWidth;
 		HEIGHT=this.g.dimensions.height;
 		SIZE=Math.floor(12000/SWIDTH,12000/HEIGHT);
-		
+
+		this.cbCreateEndScreen(xdv);
+
 		if(typeof THREE!="undefined") {
 			sphereGeometry = new THREE.SphereGeometry(1,32,16);
-			textures=["black.png","white.png","red.png"];	
+			textures=["black.png","white.png","red.png"];
 			var path = fullPath+"/res/xd-view/meshes/skybox/";
 			var format = '.jpg';
 			var urls = [
@@ -270,12 +311,12 @@
 				},
 			},
 		});
-		
-		
+
+
 		/*function createSkyball(style){
 			var graphGeometry = new THREE.SphereGeometry( 50 , 50, 50 );
-			var material = new THREE.MeshBasicMaterial( { 
-		        color: 0x00ff00, 
+			var material = new THREE.MeshBasicMaterial( {
+		        color: 0x00ff00,
 		        wireframe: false,
 		        side: THREE.DoubleSide
 		    } );
@@ -287,11 +328,11 @@
 			// faces are indexed using characters
 			var faceIndices = [ 'a', 'b', 'c', 'd' ];
 			// first, assign colors to vertices as desired
-			for ( var i = 0; i < graphGeometry.vertices.length; i++ ) 
+			for ( var i = 0; i < graphGeometry.vertices.length; i++ )
 			{
 				point = graphGeometry.vertices[ i ];
 				color = new THREE.Color( 0x000000 );
-				
+
 				var delta=(zMax - point.z)/zRange;
 				if(style=="turtles3d"){
 					color.b = 1+delta;
@@ -300,15 +341,15 @@
 				}else{
 					color.g = color.b = color.r = delta/6;
 				}
-				
+
 				graphGeometry.colors[i] = color; // use this array for convenience
 			}
 			// copy the colors as necessary to the face's vertexColors array.
-			for ( var i = 0; i < graphGeometry.faces.length; i++ ) 
+			for ( var i = 0; i < graphGeometry.faces.length; i++ )
 			{
 				face = graphGeometry.faces[ i ];
 				numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
-				for( var j = 0; j < numberOfSides; j++ ) 
+				for( var j = 0; j < numberOfSides; j++ )
 				{
 					vertexIndex = face[ faceIndices[ j ] ];
 					face.vertexColors[ j ] = graphGeometry.colors[ vertexIndex ];
@@ -319,20 +360,20 @@
 			///////////////////////
 			// "wireframe texture"
 			var wireTexture = new THREE.ImageUtils.loadTexture( fullPath + "/res/xd-view/meshes/square.png" );
-			wireTexture.wrapS = wireTexture.wrapT = THREE.RepeatWrapping; 
+			wireTexture.wrapS = wireTexture.wrapT = THREE.RepeatWrapping;
 			wireTexture.repeat.set( 40, 40 );
 			var wireMaterial = new THREE.MeshBasicMaterial( { map: wireTexture, vertexColors: THREE.VertexColors, side:THREE.DoubleSide } );
 
-			wireMaterial.map.repeat.set( 20, 60 );	
-			
+			wireMaterial.map.repeat.set( 20, 60 );
+
 			var mesh = new THREE.Mesh( graphGeometry , wireMaterial );
 			mesh.doubleSided = true;
 			return mesh;
 		}
-		
+
 		xdv.createGadget("skyball", {
 			"turtles3d" : {
-				type : "custommesh3d",		
+				type : "custommesh3d",
 				rotate: 135,
 				rotateX: -60,
 				create: function() {
@@ -407,7 +448,7 @@
 						smooth : 0,
 						z : 0,
 						scale:[8/SWIDTH,8/SWIDTH,8/SWIDTH],
-						materials: { 
+						materials: {
 							"square" : {
 								transparent: true,
 								opacity: 0,
@@ -416,19 +457,19 @@
 								color : 0xffffff,
 								opacity: 1,
 							}
-						},							
+						},
 					},
-				});				
+				});
 			})(pos);
 		}
 		function createTurtle(avatar,callback,type,who){
 			var piecesParts=["turtle-legs-smoothed","turtle-head-smoothed","turtle-tail-smoothed","turtle-hotel","turtle-house"];
-			
+
 			var resCount=piecesParts.length;
 			var parentObject;
 			var childObjects=[];
 			function checkLoaded(){
-				if (--resCount==0){		
+				if (--resCount==0){
 					for (var n=0 ; n < childObjects.length ; n++) parentObject.add(childObjects[n]);
 					callback(parentObject);
 				}
@@ -440,7 +481,7 @@
 				var visible=true;
 				if ((piecesParts[p]==="turtle-hotel") || (piecesParts[p]==="turtle-house")){
 					smooth=0;
-				} 
+				}
 				if (piecesParts[p]==="turtle-hotel")
 					visible=false;
 				var url="smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/"+piecesParts[p]+".js";
@@ -500,7 +541,7 @@
 				})(p);
 			}
 		}
-		
+
 		function CreatePiece(side,index) {
 			var scaleFactor=1;
 			xdv.createGadget("piece#"+index, {
@@ -560,14 +601,14 @@
 						}
 					},
 					scale: [0.5*10/SWIDTH,0.5*10/SWIDTH,0.5*10/SWIDTH],
-					z : CLASSIC3D_FLOOR_Z,			
+					z : CLASSIC3D_FLOOR_Z,
 				},
 				"turkish3d":{
 					type: "meshfile",
 					scale: [1,1,1],
 					smooth : 0,
-					z : CLASSIC3D_FLOOR_Z,			
-					materials: { 
+					z : CLASSIC3D_FLOOR_Z,
+					materials: {
 						"base" : {
 							color : side==1?CLASSIC_WHITE:CLASSIC_BLACK,
 							shininess : side==1?10:20, //side==1?255:10,
@@ -593,7 +634,7 @@
 							transparent: transparent,
 							envMap: textureCube,
 							reflectivity: 0.2,
-							combine: THREE.MixOperation, 
+							combine: THREE.MixOperation,
 						} );
 						var geometry = sphereGeometry.clone();
 						for (var i = 0; i < geometry.faces.length; i++) {
@@ -601,7 +642,7 @@
 						}
 						var sphere = new THREE.Mesh(geometry,new THREE.MultiMaterial( [sphereMaterial] ));
 						return sphere;
-					},					
+					},
 				},
 				"turtles3d" :{
 					type : "custommesh3d",
@@ -611,7 +652,7 @@
 					rotate: side==1?180:0,
 					scale: [0.5,0.5,0.5],
 					checkersType: 0,
-					z : CLASSIC3D_FLOOR_Z,			
+					z : CLASSIC3D_FLOOR_Z,
 					display: function(force,options){
 						if(this.object3d.children){
 							for(var i=0;i<this.object3d.children.length;i++){
@@ -630,18 +671,18 @@
 						}
 					},
 				},
-			});			
+			});
 		}
 		function createFrame(avatar,cx,cy){
-			
+
 			function setupShapeSquare(cx,cy){
 				var sh = new THREE.Shape();
 				sh.moveTo(-cx/2 , -cy/2);
 				sh.lineTo(cx/2 , -cy/2);
 				sh.lineTo(cx/2 , cy/2);
 				sh.lineTo(-cx/2 , cy/2);
-				return sh;		
-			}					
+				return sh;
+			}
 			var bevelSize = .1;
 			var frameWidth=0.5;
 			var frameShape = setupShapeSquare(cx+frameWidth+bevelSize, cy+frameWidth+bevelSize);
@@ -651,13 +692,13 @@
 			var extrudeSettings = {
 				amount: .4 , // main extrusion thickness
 				steps: 1 , // nb of main extrusion steps
-				bevelSize: bevelSize, 
+				bevelSize: bevelSize,
 				bevelThickness:.04,
 				bevelSegments: 1, // nb of bevel segment
 			};
 
 			var frameGeo = new THREE.ExtrudeGeometry( frameShape, extrudeSettings );
-			
+
 			var matrix = new THREE.Matrix4();
 			matrix.makeRotationX(-Math.PI/2)
 			frameGeo.applyMatrix(matrix);
@@ -675,20 +716,20 @@
 		}
 
 		function createGridBoard(avatar,callback, notations, viewAs){
-	
-			var parent=new THREE.Object3D();	
+
+			var parent=new THREE.Object3D();
 			var TEXTURE_CANVAS_SZ=1024;
-			
+
 			var canvasDiffuse=document.createElement('canvas');
 			canvasDiffuse.width=canvasDiffuse.height=TEXTURE_CANVAS_SZ;
-			var textureDiff =  new THREE.Texture(canvasDiffuse);					
+			var textureDiff =  new THREE.Texture(canvasDiffuse);
 			var canvasBump=document.createElement('canvas');
 			canvasBump.width=canvasBump.height=TEXTURE_CANVAS_SZ;
 			var textureBump =  new THREE.Texture(canvasBump);
 			var margin=5; //prct
 			if (avatar.options.margin!==undefined) margin=avatar.options.margin;
-			
-			
+
+
 			function paintNotations(ctx,cellCx,cellCy,fillStyle){
 				ctx.textAlign = 'center';
 				ctx.textBaseline = 'middle';
@@ -707,13 +748,13 @@
 					ctx.fillText(text,x,y);
 				}
 			}
-			
+
 			avatar.getResource("image|"+fullPath+"/res/images/wood-chipboard-5.jpg",function(img){
-					
-				
+
+
 				var blackColor="rgba(159, 76, 12,0.2)";
 				var whiteColor="rgba(246, 222, 174,0.5)"
-				
+
 				if (avatar.options.blackCellFill!==undefined) blackColor=avatar.options.blackCellFill;
 				if (avatar.options.whiteCellFill!==undefined) whiteColor=avatar.options.whiteCellFill;
 				// create board floor
@@ -721,7 +762,7 @@
 				ctx.translate(TEXTURE_CANVAS_SZ/2,TEXTURE_CANVAS_SZ/2);
 				ctx.drawImage(img,-TEXTURE_CANVAS_SZ/2,-TEXTURE_CANVAS_SZ/2,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
 				//TEXTURE_CANVAS_SZ=(1+2*margin/100)*SWIDTH*cellCx
-				
+
 				function drawCell(ctx,fillStyle,xCenter,yCenter,cx,cy){
 					ctx.fillStyle=fillStyle;
 					ctx.fillRect(xCenter-cx/2,yCenter-cy/2,cx,cy);
@@ -750,7 +791,7 @@
 					ctx.lineTo((-SWIDTH/2)*cellCx,(-HEIGHT/2)*cellCy);
 					ctx.stroke();
 				}
-				
+
 				// pre paint with black fill color
 				ctx.fillStyle=blackColor;
 				ctx.fillRect(-TEXTURE_CANVAS_SZ/2,-TEXTURE_CANVAS_SZ/2,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
@@ -768,55 +809,55 @@
 				drawLines(ctx);
 				var notationColor=whiteColor;
 				if (avatar.options.notationColor!==undefined) notationColor=avatar.options.notationColor;
-				if (notations) 
+				if (notations)
 					paintNotations(ctx,cellCx,cellCy,notationColor);
-				
-				
+
+
 				// paint bump white + lines
 				var ctxBump=canvasBump.getContext("2d");
 				ctxBump.translate(TEXTURE_CANVAS_SZ/2,TEXTURE_CANVAS_SZ/2);
 				ctxBump.fillStyle="#ffffff";
 				ctxBump.fillRect(-TEXTURE_CANVAS_SZ/2,-TEXTURE_CANVAS_SZ/2,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
 				drawLines(ctxBump);
-				if (notations) 
+				if (notations)
 					paintNotations(ctxBump,cellCx,cellCy,"#000000");
 
-				
+
 				textureDiff.needsUpdate=true;
 				textureBump.needsUpdate=true;
-				
+
 				var bsp="#010101";
 				if (avatar.options.boardSpecular!==undefined) bsp=avatar.options.boardSpecular;
-				
+
 				var geo=new THREE.PlaneGeometry((1+2*margin/100)*SWIDTH*SIZE/1000,(1+2*margin/100)*HEIGHT*SIZE/1000);
 				var mesh=new THREE.Mesh(geo, new THREE.MeshPhongMaterial({map:textureDiff,bumpMap:textureBump,bumpScale:0.005,specular:bsp,shininess:400}));
-				mesh.rotation.x=-Math.PI/2;	
+				mesh.rotation.x=-Math.PI/2;
 				mesh.receiveShadow=true;
-				parent.add(mesh);								
+				parent.add(mesh);
 
-	
+
 				// add border frame
 				var cx=(1+2*margin/100)*SWIDTH*SIZE/1000;
 				var cy=(1+2*margin/100)*HEIGHT*SIZE/1000;
 				var frameObj = createFrame(avatar,cx,cy);
 				parent.add(frameObj);
-				
-						
+
+
 				callback(parent);
-			});			
+			});
 		}
 
 		function createLewebBoard(avatar,callback){
 			var webGeo=new THREE.IcosahedronGeometry(15,3);
 			var webMat=new THREE.MeshPhongMaterial({color: 0xffffff, wireframe: true, shininess:30, abient:0x333333, specular:0x0088ff});
-			
+
 			if (leweblook=="flat"){
 				var delta=10;
 				for (var i =0 ; i < webGeo.vertices.length; i++){
 					webGeo.vertices[i].add(new THREE.Vector3(-delta/2+Math.random()*delta,-delta/2+Math.random()*delta,0));
-				}	
+				}
 			}
-			
+
 			var mesh=new THREE.Mesh(webGeo,webMat);
 			callback(mesh);
 		}
@@ -845,17 +886,17 @@
 
 		function createAlquerqueBoard(avatar,callback){
 			var piecesParts=["board-alquerque-external-frame","board-checkers-triangle","board-checkers-slot"];
-			var metalMat=new THREE.MeshPhongMaterial({color: 0x222222, shininess:10, specular:0x444444});			
+			var metalMat=new THREE.MeshPhongMaterial({color: 0x222222, shininess:10, specular:0x444444});
 			var resCount=piecesParts.length;
 			var parentObject;
 			var childObjects=[];
 			function checkLoaded(){
-				if (--resCount==0){		
+				if (--resCount==0){
 					for (var n=0 ; n < childObjects.length ; n++) parentObject.add(childObjects[n]);
 					callback(parentObject);
 				}
 			}
-			
+
 			for(var p=0 ; p < piecesParts.length ; p++){
 				var smooth=0;
 				var shadow=true;
@@ -884,7 +925,7 @@
 							frameObj.scale.y*=1.2;
 							parentObject.add(frameObj);
 							parentObject.receiveShadow=true;
-							
+
 						}
 						else{
 							var b3dSize=2; // cell size in blender
@@ -900,7 +941,7 @@
 											for (var k=0 ; k < 2 ; k++){
 												//materials0[0].ambiant=0xff0000;
 												var mesh;
-												if (k==0) 
+												if (k==0)
 													mesh = new THREE.Mesh( geometry , new THREE.MultiMaterial( materials0 ) );
 												else
 													mesh = new THREE.Mesh( geometry , metalMat);
@@ -918,7 +959,7 @@
 									}
 								}
 								break;
-								case "board-checkers-slot": 
+								case "board-checkers-slot":
 								{
 									for (var r=0 ; r < 5 ; r++){
 										for (var c=0 ; c < 5 ; c++){
@@ -928,7 +969,7 @@
 											mesh.position.z=b3dSize*(r-2);
 											childObjects.push(mesh);
 										}
-									}								
+									}
 								}
 								break;
 								default:
@@ -946,7 +987,7 @@
 				})(p);
 			}
 		}
-		
+
 		var turkishBoardOptions= {
 			blackCellFill:"rgba(140, 41, 41,0.4)",
 			whiteCellFill:"rgba(140, 41, 41,0.4)",
@@ -990,13 +1031,13 @@
 			"turkish3d": turkishBoardOptions,
 			"turtles3d": turtlesBoardOptions,
 		});
-	
+
 		xdv.createGadget("boardframe", {
 			"3d": {
 				type: "custommesh3d",
 				create: function(callback){
 					createGridBoard(this,callback,false,1);
-				},	
+				},
 			},
 			"turkish3d": turkishBoardOptions,
 			"turtles3d": turtlesBoardOptions,
@@ -1010,7 +1051,7 @@
 				z : -320,
 			},
 		});
-		
+
 		xdv.createGadget("turtlesworld", {
 			"turtles3d":{
                 harbor: false,
@@ -1020,19 +1061,19 @@
 				create: function() {
 					var $this=this;
 					var smooth=0;
-					var gg=new THREE.CylinderGeometry(150,150,1, 64, 1, false);					
+					var gg=new THREE.CylinderGeometry(150,150,1, 64, 1, false);
 					var gm=new THREE.MeshPhongMaterial( { color: 0xff0000 /*, ambient : 0x000000 */} );
 					var board = new THREE.Mesh( gg , gm );
 					board.receiveShadow=true;
-					
+
 					this.getResource("smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/rainbowflat.js",function(geometry , materials) {
-						
+
 						materials[0].transparent=true;
 						materials[0].opacity=.8;
 						materials[0].side = THREE.DoubleSide;
 						materials[0].shininess = 10;
 						materials[0].specular.setHex(0x222222);
-						
+
 						var rainbow = new THREE.Mesh( geometry , new THREE.MultiMaterial( materials ) );
 						rainbow.scale.set(7,7,7);
 						rainbow.position.set(7,0,-7);
@@ -1044,23 +1085,23 @@
 				},
 			}
 		});
-		
+
 		xdv.createGadget("flowers", {
 			"turtles3d" : {
                 harbor: false,
-				type : "custommesh3d",		
+				type : "custommesh3d",
 				create: function() {
 					var $this=this;
 					var container=new THREE.Object3D();
 					var catCount=1;
-										
+
 					var texPath = fullPath + "/res/xd-view/meshes/star.png" ;
-					
+
 					var textureLoader = new THREE.TextureLoader();
 					textureLoader.setCrossOrigin("anonymous");
 					textureLoader.load(texPath,
-							function(texture){		
-								var starSprite = texture ; 
+							function(texture){
+								var starSprite = texture ;
 								for(var i=0;i<catCount;i++) {
 									var material = new THREE.PointsMaterial( { size: 0.5, map: starSprite, blending: THREE.NormalBlending,  depthTest: true, transparent : true } );
 									var geometry = new THREE.Geometry();
@@ -1075,7 +1116,7 @@
 									}
 									material.color.setHex( 0xffffff );
 									var particles = new THREE.Points( geometry, material);
-									
+
 									container.add(particles)
 								}
 								$this.objectReady(container);
@@ -1100,7 +1141,7 @@
 				z: -200,
 				scale: [1,1,1],
 				flatShading: true,
-				create: function() {					
+				create: function() {
 					var $this=this;
 					this.getResource("smoothedfilegeo|"+0+"|"+fullPath+"/res/xd-view/meshes/rocksmoothed.js",function(geometry , materials) {
 						var rocks=new THREE.Object3D();
@@ -1116,7 +1157,7 @@
 							rock.castShadow=true;
 							rocks.add(rock);
 						}
-						
+
 						$this.objectReady(rocks);
 					});
 					return null;
@@ -1130,12 +1171,12 @@
 				z: -200,
 				scale: [2,2,2],
 				flatShading: true,
-				create: function() {					
+				create: function() {
 					var $this=this;
 					this.getResource("smoothedfilegeo|"+0+"|"+fullPath+"/res/xd-view/meshes/turtle-fences.js",function(geometry , materials) {
-					
+
 						var fenceMat = new THREE.MeshPhongMaterial({color : 0xffffff , specular:0x222222 , shininess:100, shading:THREE.FlatShading});
-						
+
 						var fences=new THREE.Mesh(geometry,fenceMat);
 						for (var i=0;i<3;i++){
 							var fence=new THREE.Mesh(geometry,fenceMat);
@@ -1143,7 +1184,7 @@
 							fence.castShadow=true;
 							fences.add(fence);
 						}
-						
+
 						$this.objectReady(fences);
 					});
 					return null;
@@ -1159,19 +1200,19 @@
 						z : 2,
 						classes : "",
 					},
-					"3d":{	
+					"3d":{
 						receiveShadow:true,
 					},
 				});
 				xdv.saveGadgetProps("square#"+i,["color"],"initial");
 			}
-		
+
 		function createScreen(videoTexture) {
 			var $this=this;
 			var smooth=0;
 			this.getResource("smoothedfilegeo|"+smooth+"|"+fullPath+"/res/xd-view/meshes/flatscreen.js",function(geometry , materials) {
  				var materials0=[];
- 				
+
  				for(var i=0;i<materials.length;i++){
                     if (materials[i].name=="screen"){
 	 					var mat=materials[i].clone();
@@ -1193,13 +1234,13 @@
  					}
  				}
  				var mesh = new THREE.Mesh( geometry , new THREE.MultiMaterial( materials0 ) );
- 				
+
  				mesh.visible = false;
  				$this.objectReady(mesh);
 			});
 			return null;
 		};
-		
+
 		xdv.createGadget("videoa",{
 			"3d": {
 				type : "video3d",
@@ -1216,15 +1257,15 @@
 				},
 			},
 		});
-		
+
 		this.xdInitExtra(xdv);
 	}
-	
+
 	View.Game.xdBuildScene = function(xdv) {
-		
+
 		currentGame=this;
 		var $this=this;
-		
+
 		xdv.updateGadget("fences",{
 			"turtles3d": {
 				visible: true,
@@ -1281,7 +1322,7 @@
 				height: HEIGHT*SIZE,
 			},
 		});
-		
+
 		xdv.updateGadget("boardframe",{
 			"3d": {
 				visible: !this.mNotation && (this.mViewAs>0),
@@ -1330,7 +1371,7 @@
 				visible: true,
 			},
 		});*/
-		
+
 		for(var r=0;r<HEIGHT;r++)
 			for(var c=0;c<SWIDTH;c++) {
 			var i=r*SWIDTH+c;
@@ -1344,13 +1385,13 @@
 				"2d" : {
 					initialClasses : black?"cell-black":"cell-white",
 					width : SIZE,
-					height : SIZE,					
+					height : SIZE,
 				},
 				"3d" : {
 					visible: true,
 					scale: [1,1,1],
 				},
-			});			
+			});
 		}
 		for(var pos=0;pos<this.g.Coord.length;pos++) {
 			var coord=this.getCCoord(pos);
@@ -1382,7 +1423,7 @@
 			});
 		}
 	}
-	
+
 	View.Game.getVCoord = function() {
 		var r,c;
 		if(arguments.length==1) {
@@ -1403,7 +1444,7 @@
 		var vy=(r-(HEIGHT-1)/2)*SIZE;
 		return [vx,vy];
 	}
-	
+
 	View.Game.getCCoord=function(pos) {
 		var rcCoord=this.g.Coord[pos];
 		var r=rcCoord[0];
@@ -1431,7 +1472,7 @@
 					"2d" : {
 						clipx: piece.t==0?0:100,
 						clipy: piece.s==1?0:100,
-						opacity : 1,						
+						opacity : 1,
 					},
 					"2d-wood-alquerque" : {
 						clipy: piece.s==1?0:150,
@@ -1440,7 +1481,7 @@
 					"kids":{
 						clipy: piece.s==1?0:100,
 					},
-					"3d" : {					
+					"3d" : {
 						checkersType: piece.t,
 						checkersSide: piece.s,
 					},
@@ -1463,20 +1504,20 @@
 						//file : aGame.mViewOptions.fullPath+"/res/xd-view/meshes/turkish-piece"+(piece.t==0?"":"-queen")+".js",
 						file : aGame.mViewOptions.fullPath+"/res/xd-view/meshes/turkish"+(piece.t==0?"":"-queen")+".js",
 						z: CLASSIC3D_FLOOR_Z,
-						materials: { 
+						materials: {
 							"base" : {
 								opacity: 1,
-							}, 
+							},
 						},
 					},
 					"turtles3d": {
 						scale : [ SIZE * .0003, SIZE * .0003, SIZE * .0003 ],
-						z : CLASSIC3D_FLOOR_Z,			
+						z : CLASSIC3D_FLOOR_Z,
 						checkersType: piece.t,
-						rotate: 
+						rotate:
 							this.CheckersAngle(aGame,piece,piece.plp,piece.p),
 					}
-					
+
 				});
 			}
 		}
@@ -1487,25 +1528,25 @@
 				}
 			});
 		xdv.updateGadget("boardframe", {
-			"3d": {			
-				materials: { 
+			"3d": {
+				materials: {
 					"playera" : {
 						color : aGame.mViewAs==JocGame.PLAYER_A?CLASSIC_WHITE:CLASSIC_BLACK,
-					}, 
+					},
 					"playerb" : {
 						color : aGame.mViewAs==JocGame.PLAYER_B?CLASSIC_WHITE:CLASSIC_BLACK,
 					}
 				},
 			},
 			"turkish3d":{
-				materials: { 
+				materials: {
 					"mainframe" : {
 						color : 0x111111,
 					},
 				},
 			},
 			"turtles3d":{
-				materials: { 
+				materials: {
 					"mainframe" : {
 						color : 0x55ff88,
 					},
@@ -1513,25 +1554,25 @@
 			},
 		});
 		xdv.updateGadget("videoa", {
-			"3d": {			
-				materials: { 
+			"3d": {
+				materials: {
 					"tv" : {
 						color : CLASSIC_WHITE,
-					}, 
+					},
 				},
 			},
 		});
 		xdv.updateGadget("videob", {
-			"3d": {			
-				materials: { 
+			"3d": {
+				materials: {
 					"tv" : {
 						color : CLASSIC_BLACK,
-					}, 
+					},
 				},
 			},
 		});
 	}
-	
+
 	View.Board.xdInput = function(xdv, aGame) {
 		return {
 			initial: {
@@ -1572,13 +1613,13 @@
 										opacity: aGame.mShowMoves || mode=="cancel"?.5:0,
 									},
 									"3d": {
-										materials: { 
+										materials: {
 											"ring" : {
 												color : mode=="cancel"?0xff4400:0xffffff,
 												opacity: aGame.mShowMoves || mode=="cancel"?1:0,
 												transparent: aGame.mShowMoves || mode=="cancel"?false:true,
 											}
-										},	
+										},
 										castShadow: aGame.mShowMoves || mode=="cancel",
 									},
 								});
@@ -1609,7 +1650,7 @@
 										x: coord[0],
 										y: coord[1],
 									},
-								});								
+								});
 								var captPiece=move.capt[actionIndex]!=null?this.board[move.capt[actionIndex]]:null;
 								if(captPiece!=null)
 									xdv.updateGadget("piece#"+captPiece,{
@@ -1617,10 +1658,10 @@
 											opacity : 1,
 										},
 										"3d" : {
-											materials: { 
+											materials: {
 												"base" : {
 													opacity: 1,
-												}, 
+												},
 												"queen" : {
 													opacity: 1,
 												}
@@ -1636,7 +1677,7 @@
 			},
 		}
 	}
-	
+
 	View.Board.checkersAnimateMove = function(xdv, aGame, pieceIndex, pos, captPiece, callback) {
 		if(captPiece===null) aGame.PlaySound("move"+(1+Math.floor(Math.random()*4)));
 		var animCount=1;
@@ -1685,10 +1726,10 @@
 				},
 				"3d" : {
 					visible: !aGame.g.captureInstantRemove,
-					materials: { 
+					materials: {
 						"base" : {
 							opacity: .3,
-						}, 
+						},
 						"queen" : {
 							opacity: .3,
 						}
@@ -1698,7 +1739,7 @@
 		}
 
 	}
-	
+
 	View.Board.checkersVanishCapts = function(xdv, aGame, capts, callback) {
 		var animCount=0;
 		function EndAnim() {
@@ -1706,7 +1747,7 @@
 			if(animCount==0)
 				callback();
 		}
-		for(var capt in capts) 
+		for(var capt in capts)
 			if(capts.hasOwnProperty(capt)) {
 				animCount++;
 				xdv.updateGadget("piece#"+capt,{
@@ -1727,7 +1768,7 @@
 		if(animCount==0)
 			callback();
 	}
-	
+
 	View.Board.xdPlayedMove = function(xdv, aGame, aMove) {
 		var $this=this;
 		var board=aGame.mOldBoard;
@@ -1760,7 +1801,7 @@
 		Animate();
 		return false;
 	}
-	
+
 	View.Board.CheckersAngle = function(aGame,piece,from,to) {
 		var $this=this;
 		if(from!=to) {
@@ -1795,6 +1836,6 @@
 		}
 		return aGame.mViewAs==piece.s?180:0;
 	}
-	
+
 })();
 

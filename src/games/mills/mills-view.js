@@ -1,9 +1,9 @@
 /*
  *
  * Copyright (c) 2012 - Jocly - www.jocly.com
- * 
+ *
  * This file is part of the Jocly game platform and cannot be used outside of this context without the written permission of Jocly.
- * 
+ *
  */
 
 View.Game.MillsDrawPiece=function(canvas,color) {
@@ -52,13 +52,13 @@ View.Game.MillsDrawPiece=function(canvas,color) {
 	    }
 	    break;
 	}
-	
+
 	if(path.length>0){
 		var imageObj = new Image();
 	    imageObj.onload = function(){
 	        ctx.drawImage(imageObj, m/2, m/2, l-m, l-m);
 	    }
-		imageObj.src = path;		
+		imageObj.src = path;
 	}else{
 		// shadow
 		ctx.save();
@@ -67,7 +67,7 @@ View.Game.MillsDrawPiece=function(canvas,color) {
 		ctx.arc(l/2,l/2+m/2,(l-m)/2,0,Math.PI*2,true);
 		ctx.fill();
 		ctx.restore();
-		
+
 		// token
 		var grad=ctx.createLinearGradient(0,0,0,l);
 		if (color=="white"){
@@ -84,12 +84,12 @@ View.Game.MillsDrawPiece=function(canvas,color) {
 		ctx.fill();
 		ctx.stroke();
 		ctx.closePath();
-	
+
 		ctx.beginPath();
 		ctx.strokeStyle="rgba(128,128,128,0.3)";
 		ctx.arc(l/2,l/2,(l-m)/2.5,0,Math.PI*2,true);
 		ctx.stroke();
-		ctx.closePath();	
+		ctx.closePath();
 		ctx.beginPath();
 		ctx.arc(l/2,l/2,(l-m)/8,0,Math.PI*2,true);
 		ctx.stroke();
@@ -98,7 +98,7 @@ View.Game.MillsDrawPiece=function(canvas,color) {
 }
 
 View.Game.MillsDrawBoard=function() {
-		
+
 	var path="";
 	// token
 	switch(this.mSkin){
@@ -108,12 +108,12 @@ View.Game.MillsDrawBoard=function() {
 		case 'basic':
 		break;
 	}
-	
+
 	if (path.length>0){
 		var ctx=this.g.ctxField;
 		ctx.save();
-		ctx.clearRect(0,0,this.g.boardW,this.g.boardH);		
-		var GAME=this;			
+		ctx.clearRect(0,0,this.g.boardW,this.g.boardH);
+		var GAME=this;
 		var imageObj = new Image();
 	    imageObj.onload = function(){
 	    	if(GAME.g.boardW>0 && GAME.g.boardH>0)
@@ -137,14 +137,14 @@ View.Game.MillsDrawBoard=function() {
 			this.g.boardW/2,-this.g.boardW/2,2*this.g.boardH);
 		boardGradient.addColorStop(0,"#BAF445");
 		boardGradient.addColorStop(1,"#008000");
-	
-		
+
+
 		ctx.fillStyle = boardGradient ;
 		ctx.beginPath();
 		ctx.rect(0,0,this.g.boardW,this.g.boardH);
-		ctx.closePath();	
+		ctx.closePath();
 		ctx.fill();
-	
+
 		function DrawLine(fr,fc,tr,tc) {
 			aGame.g.ctxField.beginPath();
 			aGame.g.ctxField.moveTo(aGame.g.cellSide/2+(fc+1)*aGame.g.cellSide,aGame.g.cellSide/2+fr*aGame.g.cellSide);
@@ -152,35 +152,35 @@ View.Game.MillsDrawBoard=function() {
 			aGame.g.ctxField.closePath();
 			aGame.g.ctxField.strokeStyle="rgb(50,50,50)";
 			aGame.g.ctxField.lineWidth=aGame.g.cellSide/10;
-			aGame.g.ctxField.stroke();	
+			aGame.g.ctxField.stroke();
 		}
-	
+
 		var lines=this.MillsGetLines();
 		for(var i=0; i<lines.length; i++) {
 			var segment=lines[i];
-			DrawLine(segment[0],segment[1],segment[2],segment[3]);		
+			DrawLine(segment[0],segment[1],segment[2],segment[3]);
 		}
-	
+
 		function DrawDisk(r,c) {
 			aGame.g.ctxField.beginPath();
 			aGame.g.ctxField.fillStyle="rgb(50,50,50)";
 			aGame.g.ctxField.arc(aGame.g.cellSide/2+(c+1)*aGame.g.cellSide,aGame.g.cellSide/2+r*aGame.g.cellSide,aGame.g.cellSide/5,0,Math.PI*2,true);
 			aGame.g.ctxField.closePath();
-			aGame.g.ctxField.fill();	
-	
+			aGame.g.ctxField.fill();
+
 			aGame.g.ctxField.beginPath();
 			aGame.g.ctxField.fillStyle="rgb(255,255,255)";
 			aGame.g.ctxField.arc(aGame.g.cellSide/2+(c+1)*aGame.g.cellSide,aGame.g.cellSide/2+r*aGame.g.cellSide,aGame.g.cellSide/10,0,Math.PI*2,true);
 			aGame.g.ctxField.closePath();
-			aGame.g.ctxField.fill();	
+			aGame.g.ctxField.fill();
 		}
-	
+
 		for(var i=0;i<this.g.Coord.length; i++) {
 			var coord=this.g.Coord[i];
 			DrawDisk(coord[0],coord[1]);
 		}
 	}
-	
+
 }
 
 View.Game.MillsDrawCell=function(row,col,top,left,width,height) {
@@ -217,19 +217,19 @@ View.Game.MillsMarginFactor = 16;
 View.Game.MillsPossibleMarginFactor = 0;
 
 View.Game.InitView=function() {
-	
+
 	var $this=this;
 	var WIDTH=this.mOptions.width;
 	var HEIGHT=this.mOptions.height;
 
 	this.MillsSetCellSide();
-	
+
 	this.g.cellMargin=Math.floor(this.g.cellSide/this.MillsMarginFactor);
 	this.g.tokenSide=this.g.cellSide-2*this.g.cellMargin;
 	this.MillsSetBoardSize();
 	this.g.top=Math.floor((this.mGeometry.height-this.g.boardH)/2);
 	this.g.left=Math.floor((this.mGeometry.width-this.g.boardW)/2);
-	
+
 	var board=$("<div/>").addClass("mills-board").css({
 		top: this.g.top,
 		left: this.g.left,
@@ -271,7 +271,7 @@ View.Game.InitView=function() {
 		CreatePiece(JocGame.PLAYER_A,index++,i);
 	for(var i=0;i<this.mOptions.mencount;i++)
 		CreatePiece(JocGame.PLAYER_B,index++,i);
-	
+
 	for(var i=0; i<this.g.Coord.length; i++) {
 		var cCoord=this.g.Coord[i];
 		var r=cCoord[0];
@@ -325,7 +325,7 @@ View.Board.MillsDisplayPiece=function(aGame,piece) {
 		if(piece.d>-1) {
 			var h=aGame.g.boardH/aGame.mOptions.mencount;
 			if(piece.s==aGame.mViewAs) {
-				top=aGame.g.top+h*(piece.d+0.5)-aGame.g.cellSide/2;				
+				top=aGame.g.top+h*(piece.d+0.5)-aGame.g.cellSide/2;
 				left=aGame.g.left;
 			} else {
 				top=aGame.g.top+aGame.g.boardH-h*piece.d-h/2-aGame.g.cellSide/2;
@@ -342,7 +342,7 @@ View.Board.MillsDisplayPiece=function(aGame,piece) {
 			left: left+aGame.g.cellMargin,
 			opacity: 1,
 		}).show();
-	} else 
+	} else
 		pWidget.hide();
 }
 
@@ -374,7 +374,7 @@ View.Board.MillsMovePiece=function(aGame,index,pos,fnt) {
 }
 
 View.Board.PlayedMove=function(aGame,aMove) {
-	
+
 	this.UpdateZIndex(aGame);
 
 	var fromIndex=aMove.f==-1?this.lastMoveIndex:aGame.mOldBoard.board[aMove.f];
@@ -387,11 +387,11 @@ View.Board.PlayedMove=function(aGame,aMove) {
 			},500,function() {
 				aGame.MoveShown();
 			});
-		} else 
+		} else
 			aGame.MoveShown();
-		
+
 	});
-	
+
 	return false;
 }
 
@@ -407,7 +407,7 @@ View.Board.HumanTurn=function(aGame) {
 		t: -1,
 		c: -1,
 	}
-	
+
 	function CheckMove() {
 		for(var i=0; i<$this.mMoves.length; i++) {
 			var m=$this.mMoves[i];
@@ -418,7 +418,7 @@ View.Board.HumanTurn=function(aGame) {
 		}
 		UpdateChoice();
 	}
-	
+
 	function MakeBack() {
 		aGame.mWidget.find(".possible").hide().removeClass("possible-back");
 		aGame.mWidget.find(".front").removeClass("choice back").unbind(JocGame.CLICK);
@@ -433,12 +433,12 @@ View.Board.HumanTurn=function(aGame) {
 				UpdateChoice();
 			});
 		}
-		
+
 	}
-	
+
 	function UpdateChoice() {
 		aGame.mWidget.find(".front.choice").unbind(JocGame.CLICK).removeClass("choice");
-		
+
 		for(var p=0;p<aGame.g.Coord.length;p++) {
 			var index=$this.board[p];
 			var field=null;
@@ -465,7 +465,7 @@ View.Board.HumanTurn=function(aGame) {
 					valid=true;
 					break;
 				}
-			}																		
+			}
 			if(valid) {
 				aGame.mWidget.find(".possible[jocpos="+p+"]").show();
 				if(field=='f' || field=='c')
@@ -482,18 +482,18 @@ View.Board.HumanTurn=function(aGame) {
 						MakeBack();
 						move[field]=pos;
 						CheckMove();
-					});		
+					});
 			}
 		}
 	}
-	
+
 	UpdateChoice();
-	
+
 }
 
 
 /* Optional method.
- * Board based member: 'this' is a board instance. 
+ * Board based member: 'this' is a board instance.
  * If implemented, it is called after a human player made the move.
  */
 View.Board.HumanTurnEnd=function(aGame) {

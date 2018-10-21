@@ -25,6 +25,8 @@
 		this.cbCreatePromo(xdv);
 		this.cbCreatePieces(xdv);
 		this.cbCreateCells(xdv);
+
+		this.cbCreateEndScreen(xdv);
 	}
 
 	// useful to initialize pieces and board while the real meshes aren't loaded yet
@@ -163,6 +165,32 @@
 					width: 1200,
 					height: 1200,
 				},
+			});
+		}
+	}
+
+	View.Game.cbCreateEndScreen = function(xdv) {
+		var $this=this;
+		var states = ["win", "lose", "draw"];
+		for(var i in states) {
+			xdv.createGadget("endscreen-" + states[i],{
+				"3d": {
+					type: "plane3d",
+					x: 0,
+					y: -7000,
+					z: 3000,
+					sx: 20000.0,
+					sy: 5000.0,
+					material: "basic",
+					texture: {
+						file: $this.g.fullPath + "/res/end-" + states[i] + ".png",
+					},
+					side: THREE.DoubleSide,
+					scale:[1,1,1],
+					transparent: true,
+					color: "#ffffff",
+					data: "#ffffff",
+				}
 			});
 		}
 	}
@@ -696,6 +724,20 @@
 		aGame.mOldBoard.cbAnimate(xdv,aGame,aMove,function() {
 			aGame.MoveShown();
 		});
+	}
+
+	View.Board.xdShowEnd=function(xdv, aGame) {
+		var message = "endscreen-draw";
+		var winner = aGame.mBoard.mWinner;
+
+		if(winner === JocGame.PLAYER_A)
+			message = "endscreen-win";
+		else if(winner === JocGame.PLAYER_B)
+			message = "endscreen-lose";
+
+		xdv.updateGadget(message,{"3d":{visible:true}});
+
+		return false;
 	}
 
 	View.Board.cbAnimate = function(xdv,aGame,aMove,callback) {

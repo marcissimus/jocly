@@ -1,9 +1,9 @@
 /*
  *
  * Copyright (c) 2013 - Jocly - www.jocly.com
- * 
+ *
  * This file is part of the Jocly game platform and cannot be used outside of this context without the written permission of Jocly.
- * 
+ *
  */
 
 (function() {
@@ -11,7 +11,7 @@
 	var WIDTH, HEIGHT, SIZE, PCOUNT, SWIDTH;
 	var CLASSIC_WHITE = 0xbbaa99;
 	var CLASSIC_BLACK = 0x222222;
-	
+
 	View.Game.xdInitExtra = function(xdv) {
 	}
 
@@ -20,26 +20,26 @@
 	// useful to initialize pieces and board while the real meshes aren't loaded yet
 	View.Game.millsMakeDummyMesh = function(xdv) {
 		if(typeof THREE != "undefined")
-		    return new THREE.Mesh( new THREE.CubeGeometry( .001,.001,.001 ), 
+		    return new THREE.Mesh( new THREE.CubeGeometry( .001,.001,.001 ),
 					      new THREE.MeshLambertMaterial() );
 		else
 			return null;
 	}
-	
-	var currentGame;	
+
+	var currentGame;
 	var pieces = {};
-	
+
 	View.Game.millsMakeTokenPiece = function(avatar,who,callback) {
-		
+
 		var fullPath=this.mViewOptions.fullPath;
-		
+
 		function loadResources(who,callback){
 			var bumpMap;
 			var diffuseMap;
 			var pieceGeo;
 			var nbRes=3;
 			var TEXTURE_CANVAS_SZ=256;
-			
+
 			function checkLoaded(){
 				nbRes--;
 				if (nbRes==0){
@@ -50,7 +50,7 @@
 							ctx.fillRect(0,0,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
 						}
 					}
-					
+
 					// piecetop
 					var canvasDiffuse=document.createElement('canvas');
 					canvasDiffuse.width=canvasDiffuse.height=TEXTURE_CANVAS_SZ;
@@ -58,18 +58,18 @@
 					var canvasBump=document.createElement('canvas');
 					canvasBump.width=canvasBump.height=TEXTURE_CANVAS_SZ;
 					var textureBump =  new THREE.Texture(canvasBump);
-					
-					
+
+
 					var ctx=canvasDiffuse.getContext("2d");
 					ctx.drawImage(diffuseMap,0,0,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
 					blackenCtxIfNeeded(ctx);
-					
+
 					var ctxBump=canvasBump.getContext("2d");
 					ctxBump.drawImage(bumpMap,0,0,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
-					
+
 					textureDiff.needsUpdate=true;
 					textureBump.needsUpdate=true;
-					
+
 					// piece border
 					var canvasDiffuseB=document.createElement('canvas');
 					canvasDiffuseB.width=canvasDiffuseB.height=TEXTURE_CANVAS_SZ;
@@ -78,8 +78,8 @@
 					ctxB.drawImage(diffuseMap,0,0,TEXTURE_CANVAS_SZ,TEXTURE_CANVAS_SZ);
 					blackenCtxIfNeeded(ctxB);
 					textureDiffB.needsUpdate=true;
-					
-					
+
+
 					var specular="#222222",shininess=20;
 					if (who<0) {
 						specular="#333333";
@@ -96,11 +96,11 @@
 						specular:specular,
 						shininess:shininess,
 						map:textureDiffB});
-					
+
 					var pieceMat=new THREE.MultiMaterial([matborder,mattop]);
-					
+
 					callback({geometry:pieceGeo,material:pieceMat});
-					
+
 				}
 			}
 
@@ -121,10 +121,10 @@
 					checkLoaded();
 				});
 		}
-				
-				
+
+
 		var key="_"+who+"_";
-			
+
 		var piece=pieces[key];
 		if(Array.isArray(piece))
 			piece.push(callback);
@@ -140,21 +140,62 @@
 					callback(new THREE.Mesh(resources.geometry,resources.material));
 				});
 			});
-		} else 
-			callback(new THREE.Mesh(piece.geometry,piece.material));				
+		} else
+			callback(new THREE.Mesh(piece.geometry,piece.material));
+	}
+
+	View.Game.cbCreateEndScreen = function(xdv) {
+		var $this=this;
+		var states = ["win", "lose", "draw"];
+		for(var i in states) {
+			xdv.createGadget("endscreen-" + states[i],{
+				"3d": {
+					type: "plane3d",
+					x: 0,
+					y: -7000,
+					z: 3000,
+					sx: 20000.0,
+					sy: 5000.0,
+					material: "basic",
+					texture: {
+						file: $this.mViewOptions.fullPath + "/res/end-" + states[i] + ".png",
+					},
+					side: THREE.DoubleSide,
+					scale:[1,1,1],
+					transparent: true,
+					color: "#ffffff",
+					data: "#ffffff",
+				}
+			});
+		}
+	}
+
+	View.Board.xdShowEnd=function(xdv, aGame) {
+		var message = "endscreen-draw";
+		var winner = aGame.mBoard.mWinner;
+
+		if(winner === JocGame.PLAYER_A)
+			message = "endscreen-win";
+		else if(winner === JocGame.PLAYER_B)
+			message = "endscreen-lose";
+
+		xdv.updateGadget(message,{"3d":{visible:true}});
+
+		return false;
 	}
 
 	View.Game.xdInit = function(xdv) {
-			
+
 		var $this = this;
 		this.xdPreInit();
-		
+
+
 		var fullPath=this.mViewOptions.fullPath;
 		WIDTH=this.mOptions.width;
 		SWIDTH=this.mOptions.width+2;
 		HEIGHT=this.mOptions.height;
 		SIZE=Math.floor(Math.min(12000/SWIDTH,12000/HEIGHT));
-		
+
 		xdv.createGadget("board", {
 			"2d" : {
 				type : "image",
@@ -163,19 +204,19 @@
 
 		xdv.createGadget("skyball", {
 			"3d" : {
-                harbor: false,
-				type : "custommesh3d",		
+				harbor: false,
+				type : "custommesh3d",
 				rotate: 135,
 				rotateX: -60,
 				create: function() {
-					
+
 					var graphGeometry = new THREE.SphereGeometry( 40 , 50, 50 );
-					var material = new THREE.MeshBasicMaterial( { 
-				        color: 0x00ff00, 
+					var material = new THREE.MeshBasicMaterial( {
+				        color: 0x00ff00,
 				        wireframe: false,
 				        side: THREE.DoubleSide
 				    } );
-					
+
 					///////////////////////////////////////////////
 					// calculate vertex colors based on Z values //
 					///////////////////////////////////////////////
@@ -187,25 +228,25 @@
 					// faces are indexed using characters
 					var faceIndices = [ 'a', 'b', 'c', 'd' ];
 					// first, assign colors to vertices as desired
-					for ( var i = 0; i < graphGeometry.vertices.length; i++ ) 
+					for ( var i = 0; i < graphGeometry.vertices.length; i++ )
 					{
 						point = graphGeometry.vertices[ i ];
 						color = new THREE.Color( 0x000000 );
-						
+
 						var delta=(zMax - point.z)/zRange;
 						/*color.b = 1+delta;
 						color.g = 0.5+0.4*delta;
 						color.r = 0.3*delta;*/
 						color.g = color.b = color.r = delta/6;
-						
+
 						graphGeometry.colors[i] = color; // use this array for convenience
 					}
 					// copy the colors as necessary to the face's vertexColors array.
-					for ( var i = 0; i < graphGeometry.faces.length; i++ ) 
+					for ( var i = 0; i < graphGeometry.faces.length; i++ )
 					{
 						face = graphGeometry.faces[ i ];
 						numberOfSides = ( face instanceof THREE.Face3 ) ? 3 : 4;
-						for( var j = 0; j < numberOfSides; j++ ) 
+						for( var j = 0; j < numberOfSides; j++ )
 						{
 							vertexIndex = face[ faceIndices[ j ] ];
 							face.vertexColors[ j ] = graphGeometry.colors[ vertexIndex ];
@@ -221,16 +262,16 @@
 					textureLoader.setCrossOrigin("anonymous");
 					textureLoader.load(fullPath + "/res/xd-view/meshes/square.png",
 						function(wireTexture){
-							wireTexture.wrapS = wireTexture.wrapT = THREE.RepeatWrapping; 
+							wireTexture.wrapS = wireTexture.wrapT = THREE.RepeatWrapping;
 							wireTexture.repeat.set( 40, 40 );
 							var wireMaterial = new THREE.MeshBasicMaterial( { map: wireTexture, vertexColors: THREE.VertexColors, side:THREE.DoubleSide } );
-	
+
 							wireMaterial.map.repeat.set( 20, 60 );
-							
+
 							var mesh = new THREE.Mesh( graphGeometry , wireMaterial );
 							mesh.doubleSided = true;
 							$this.objectReady(mesh);
-						},			
+						},
 						// Function called when download progresses
 						function ( xhr ) {
 							//console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
@@ -303,8 +344,8 @@
 						scale: [.8,.8,.8],
 						smooth : 0,
 						flatShading: true,
-						z : -100,		
-						materials: { 
+						z : -100,
+						materials: {
 							"square" : {
 								transparent: true,
 								opacity: 0,
@@ -316,22 +357,22 @@
 								//transparent: true,
 								//opacity: 0.5,
 							}
-						},	
+						},
 					},
-				});				
+				});
 			})(pos);
 		}
-		
+
 		function createFrame(avatar,cx,cy){
-			
+
 			function setupShapeSquare(cx,cy){
 				var sh = new THREE.Shape();
 				sh.moveTo(-cx/2 , -cy/2);
 				sh.lineTo(cx/2 , -cy/2);
 				sh.lineTo(cx/2 , cy/2);
 				sh.lineTo(-cx/2 , cy/2);
-				return sh;		
-			}					
+				return sh;
+			}
 			var bevelSize = .1;
 			var frameWidth=0.5;
 			var frameShape = setupShapeSquare(cx+frameWidth+bevelSize, cy+frameWidth+bevelSize);
@@ -341,13 +382,13 @@
 			var extrudeSettings = {
 				amount: .4 , // main extrusion thickness
 				steps: 1 , // nb of main extrusion steps
-				bevelSize: bevelSize, 
+				bevelSize: bevelSize,
 				bevelThickness:.04,
 				bevelSegments: 1, // nb of bevel segment
 			};
 
 			var frameGeo = new THREE.ExtrudeGeometry( frameShape, extrudeSettings );
-			
+
 			var matrix = new THREE.Matrix4();
 			matrix.makeRotationX(-Math.PI/2)
 			frameGeo.applyMatrix(matrix);
@@ -362,7 +403,7 @@
 			frameObj.position.y=-extrudeSettings.amount-.01;
 			return frameObj;
 		}
-		
+
 		function CreatePiece(side,index) {
 			xdv.createGadget("piece#"+index, {
 				"2d" : {
@@ -394,9 +435,9 @@
 						}
 					},
 					scale: [0.3*10/SWIDTH,0.3*10/SWIDTH,0.3*10/SWIDTH],
-					z : 1,			
+					z : 1,
 				},
-			});			
+			});
 		}
 
 		var index=0;
@@ -404,21 +445,21 @@
 			for(var m=0;m<this.mOptions.mencount;m++)
 				CreatePiece(side,index++);
 		PCOUNT=this.mOptions.menCount*2;
-		
+
 		var coords=this.g.Coord;
 		var graph=this.g.Graph;
 		xdv.createGadget("boardframe", {
 			"classic3d": {
 				type : "custommesh3d",
-				color: 0xaaffaa,		
+				color: 0xaaffaa,
 				scale: [1.65,1.65,1.65],
 				opacity : 1,
 				//flatShading: true,
 				z : -320,
-				create: function() {					
+				create: function() {
 					var $this=this;
 					this.getResource("smoothedfilegeo|"+0+"|"+fullPath+"/res/xd-view/meshes/boardoriented.js",function(geometry , materials) {
-						
+
 						var zoom=0.81;
 						switch(WIDTH){
 							default:
@@ -433,12 +474,12 @@
 							case 3:
 								zoom=1.40;
 							break;
-							
+
 						}
 						function xyPos(position){
 							return [zoom*(-WIDTH/2+coords[position][0]+0.5),zoom*(-HEIGHT/2+coords[position][1]+0.5)];
 						}
-						for (var m in materials) 
+						for (var m in materials)
 							if(materials.hasOwnProperty(m)) {
 								var mat=materials[m];
 								if (mat.name=="mainframe"){
@@ -447,12 +488,12 @@
 								}
 							}
 						var board=new THREE.Mesh(geometry,new THREE.MultiMaterial( materials ));
-						
-						var cylGeo=new THREE.SphereGeometry(0.15, 32, 32);		
+
+						var cylGeo=new THREE.SphereGeometry(0.15, 32, 32);
 						var cylMat=new THREE.MeshPhongMaterial( { color: 0x000000 , specular: 0x030303, shininess  : 500 } );
 						for (var i=0;i< coords.length;i++){
 							var cyl=new THREE.Mesh(cylGeo,cylMat);
-							
+
 							cyl.castShadow=true;
 							cyl.position.y=0.16;
 							var xy=xyPos(i);
@@ -460,15 +501,15 @@
 							cyl.position.z=xy[1];
 							cyl.castShadow=true;
 							cyl.scale.y=.2;
-							board.add(cyl);							
+							board.add(cyl);
 						}
-    					
+
 						var tubeMat = new THREE.MeshPhongMaterial( { color: 0x000000 , specular: 0x050505, shininess  : 500  } );
-						
+
 						var doneSegments=[];
 						function JoinPositions(p1,p2){
 							var signature=(p1<p2)?p1+"-"+p2:p2+"-"+p1;
-							if (doneSegments[signature]) 
+							if (doneSegments[signature])
 								return;
 							doneSegments[signature]=true;
 							//alert("JoinPositions: p1="+p1+" ,p2="+p2);
@@ -485,16 +526,16 @@
 							tube.castShadow=false;
 							board.add(tube);
 						}
-						
+
 						/*for (var p=0;p<graph.length;p++){
 							for(var q=0;q<graph[p].length;q++){*/
 						for (var p=0;p<graph.length;p++){
 							for(var q=0;q<graph[p].length;q++){
-								if (graph[p][q]!=null) 
+								if (graph[p][q]!=null)
 									JoinPositions(p,graph[p][q]);
 							}
 						}
-						
+
 						// add border frame
 						var margin=-8;
 						var cx=7.83;//(1+2*margin/100)*WIDTH*SIZE/1000;
@@ -512,19 +553,19 @@
 				},
 			},
 		});
-		
+
 		var millsCreateScreen = function(videoTexture) {
 			// flat screens
 			var gg=new THREE.PlaneGeometry(4,3,1,1);
 			var gm=new THREE.MeshPhongMaterial({color:0xffffff,map:videoTexture,shading:THREE.FlatShading,emissive:{r:1,g:1,b:1}});
 			var mesh = new THREE.Mesh( gg , gm );
-			this.objectReady(mesh); 
+			this.objectReady(mesh);
 			return null;
-		}		
-		
+		}
+
 		xdv.createGadget("videoa",{
 			"3d": {
-				type : "video3d",				
+				type : "video3d",
 				makeMesh: function(videoTexture){
 					return millsCreateScreen.call(this,videoTexture);
 				},
@@ -532,7 +573,7 @@
 		});
 		xdv.createGadget("videoabis",{
 			"3d": {
-				type : "video3d",				
+				type : "video3d",
 				makeMesh: function(videoTexture){
 					return millsCreateScreen.call(this,videoTexture);
 				},
@@ -540,33 +581,33 @@
 		});
 		xdv.createGadget("videob",{
 			"3d": {
-				type : "video3d",				
-				makeMesh: function(videoTexture){
-					return millsCreateScreen.call(this,videoTexture);
-				},
-			},
-		});	
-		xdv.createGadget("videobbis",{
-			"3d": {
-				type : "video3d",				
+				type : "video3d",
 				makeMesh: function(videoTexture){
 					return millsCreateScreen.call(this,videoTexture);
 				},
 			},
 		});
-		
-		
+		xdv.createGadget("videobbis",{
+			"3d": {
+				type : "video3d",
+				makeMesh: function(videoTexture){
+					return millsCreateScreen.call(this,videoTexture);
+				},
+			},
+		});
+
+
 		xdv.createGadget("spacefield",{
 			"3d" : {
                 harbor: false,
-				type : "custommesh3d",		
+				type : "custommesh3d",
 				create: function() {
 					var $this=this;
 					var container=new THREE.Object3D();
 					var catCount=10;
 					var partSys=[];
-					
-					
+
+
 					var textureLoader = new THREE.TextureLoader();
 					textureLoader.setCrossOrigin("anonymous");
 					textureLoader.load(fullPath + "/res/xd-view/meshes/star.png" ,
@@ -594,20 +635,20 @@
 									vertex.y = r*Math.sin(elev);
 									var cat=Math.floor(i*catCount/data.length);
 									var catObj=partSys[cat];
-									catObj.geometry.vertices.push( vertex );					
+									catObj.geometry.vertices.push( vertex );
 								}
-								$this.objectReady(container);						
+								$this.objectReady(container);
 							});
-					});															
+					});
 				},
 			},
 		});
-					
-		
-		
+
+		this.cbCreateEndScreen(xdv);
+
 		this.xdInitExtra(xdv);
 	}
-	
+
 	View.Game.xdBuildScene = function(xdv) {
 
 		currentGame=this;
@@ -619,9 +660,9 @@
 		var yScreen=10000;
 		var screenAngle=0;
 		var thumbDist=.89;
-		var thumbOffset=5500;		
+		var thumbOffset=5500;
 		var inclination=25;
-		
+
 		xdv.updateGadget("videoa",{
 			"3d": {
 				visible: true,
@@ -668,7 +709,7 @@
 				rotateX: this.mViewAs==1?-inclination:inclination,
 				scale: [scaleScreen/4,scaleScreen/4,scaleScreen/4],
 			},
-		});		
+		});
 
 
 		xdv.updateGadget("board",{
@@ -681,7 +722,7 @@
 				height: HEIGHT*SIZE,
 			},
 		});
-		
+
 		xdv.updateGadget("boardframe",{
 			"3d": {
 				visible: true,
@@ -698,8 +739,8 @@
 			"3d": {
 				visible: true,
 			},
-		});		
-		
+		});
+
 		for(var pos=0;pos<this.g.Coord.length;pos++) {
 			var coord=this.getCCoord(pos);
 			xdv.updateGadget("text#"+pos, {
@@ -728,7 +769,7 @@
 			});
 		}
 	}
-	
+
 	View.Game.getVCoord = function() {
 		var r,c;
 		if(arguments.length==1) {
@@ -749,7 +790,7 @@
 		var vy=(r-(HEIGHT-1)/2)*SIZE;
 		return [vx,vy, - SIZE * .04];
 	}
-	
+
 	View.Game.getCCoord=function(pos) {
 		var rcCoord=this.g.Coord[pos];
 		var r=rcCoord[0];
@@ -767,8 +808,8 @@
 			var y3d=(piece.s==1?SIZE*WIDTH/2:-SIZE*WIDTH/2)*this.mViewAs;
 			var z3d=-SIZE*.04 + piece.d*SIZE*.17;
 			return {
-				"2d": [x,y2d,z2d], 
-				"3d": [x,y3d,z3d], 
+				"2d": [x,y2d,z2d],
+				"3d": [x,y3d,z3d],
 			}
 		} else {
 			var coord=this.getCCoord(piece.p);
@@ -802,25 +843,25 @@
 					"3d" : {
 						z : coord["3d"][2],
 						scale: [SIZE*.00045,SIZE*.00045,SIZE*.00045],
-						opacity : 1,						
+						opacity : 1,
 						x: coord["3d"][0],
 						y: coord["3d"][1],
 						playerSide: piece.s,
-						materials: { 
+						materials: {
 							"base" : {
 								opacity: 1,
-							}, 
+							},
 						},
 					},
 				});
 			}
 		}
 		xdv.updateGadget("boardframe", {
-			"3d": {			
-				materials: { 
+			"3d": {
+				materials: {
 					"playera" : {
 						color : aGame.mViewAs==JocGame.PLAYER_A?CLASSIC_WHITE:CLASSIC_BLACK,
-					}, 
+					},
 					"playerb" : {
 						color : aGame.mViewAs==JocGame.PLAYER_B?CLASSIC_WHITE:CLASSIC_BLACK,
 					}
@@ -828,33 +869,33 @@
 			},
 		});
 		xdv.updateGadget("videoa", {
-			"3d": {			
-				materials: { 
+			"3d": {
+				materials: {
 					"tv" : {
 						color : CLASSIC_WHITE,
-					}, 
+					},
 				},
 			},
 		});
 		xdv.updateGadget("videob", {
-			"3d": {			
-				materials: { 
+			"3d": {
+				materials: {
 					"tv" : {
 						color : CLASSIC_BLACK,
-					}, 
+					},
 				},
 			},
-		});		
+		});
 	}
-	
+
 	View.Board.xdBuildHTStateMachine = function(xdv, htsm, aGame) {
 		var $this = this;
 		var moves=this.mMoves;
 		var pieceIndex=-1;
 		var uMove={f:-2,t:-2,c:-2},move;
 		var matchingMoves=[];
-		
-		function Highlight(pos,type) {		
+
+		function Highlight(pos,type) {
 			var piece=null;
 			var pieceIndex1;
 			pieceIndex1=$this.board[pos];
@@ -866,12 +907,12 @@
 			var event;
 			var classes;
 			switch(type) {
-			case "normal": 
+			case "normal":
 				event="E_CLICKED";
 				color=0xffff00;
 				classes="xd-choice-view";
 				break;
-			case "cancel": 
+			case "cancel":
 				event="E_CANCEL";
 				color=0xff0000;
 				classes="xd-cancel";
@@ -895,7 +936,7 @@
 					scale: [SIZE * .0006,SIZE * .0006, SIZE * .0006],
 					opacity: type=="cancel"?.5:0,
 					castShadow: true,
-					materials: { 
+					materials: {
 						"square" : {
 						},
 						"ring" : {
@@ -903,7 +944,7 @@
 							shininess : 10,
 							transparent: false,
 						}
-					},	
+					},
 
 				},
 			});
@@ -942,7 +983,7 @@
 					"base" : {
 						click : null,
 					},
-				});				
+				});
 			}
 		}
 		function Select(args) {
@@ -971,7 +1012,7 @@
 				} else if(uMove.c==-2 && mMove.c>=0) {
 					uMove.c=mMove.c;
 					htsm.smQueueEvent("E_CLICKED",{pos:mMove.c,type:"normal"});
-				} else 
+				} else
 					htsm.smQueueEvent("E_DONE",{move:mMove});
 				return;
 			}
@@ -999,7 +1040,7 @@
 					from=uMove.f
 			}
 			$this.millsAnimateMove(xdv,aGame,from,to,capt,function() {
-				htsm.smQueueEvent("E_ANIM_DONE",{});					
+				htsm.smQueueEvent("E_ANIM_DONE",{});
 			});
 		}
 		function SaveClick(args) {
@@ -1014,7 +1055,7 @@
 					uMove.t=args.pos;
 				} else if(move.c==args.pos)
 					uMove.c=args.pos;
-				
+
 			}
 		}
 		function SaveMove(args) {
@@ -1038,7 +1079,7 @@
 						x: coord["3d"][0],
 						y: coord["3d"][1],
 					},
-					
+
 				});
 			} else if(uMove.f>-2) {
 				pieceIndex=-1;
@@ -1059,7 +1100,7 @@
 		htsm.smEntering("S_DONE",[Clean]);
 
 	}
-	
+
 	View.Board.millsAnimateMove = function(xdv, aGame, from, to, capture, callback) {
 		var $this=this;
 		var pieceIndex, fly=false;
@@ -1068,7 +1109,7 @@
 				callback();
 			else {
 				pieceIndex=$this.board[capture];
-				
+
 				aGame.PlaySound("capture");
 
 				xdv.updateGadget("piece#"+pieceIndex,{
@@ -1077,7 +1118,7 @@
 					},
 					"3d": {
 						z: 7*SIZE,
-						materials: { 
+						materials: {
 							"base" : {
 								opacity: 0,
 							}
@@ -1090,7 +1131,7 @@
 			}
 		}
 		if(to>=0) {
-			if(from>=0) { 
+			if(from>=0) {
 				pieceIndex=this.board[from];
 				fly=true;
 				for(var i=0;i<aGame.g.Graph[from].length;i++)
@@ -1123,7 +1164,7 @@
 				a=a2;
 				b=-a-S2;
 			}
-			
+
 			if (fly){
 			}else{
 				aGame.PlaySound("move"+(1+Math.floor(Math.random()*4)));
@@ -1149,10 +1190,10 @@
 					aGame.PlaySound("tac"+(1+Math.floor(Math.random()*3)));
 				Capture();
 			});
-		} else 
+		} else
 			Capture();
 	}
-	
+
 	View.Board.xdPlayedMove = function(xdv, aGame, aMove) {
 		var board=aGame.mOldBoard;
 		board.millsAnimateMove(xdv,aGame,aMove.f,aMove.t,aMove.c, function() {
@@ -1160,6 +1201,6 @@
 		});
 		return false;
 	}
-	
+
 })();
 
