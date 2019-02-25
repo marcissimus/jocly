@@ -1752,7 +1752,6 @@ if (window.JoclyXdViewCleanup)
 				makeMesh: function (videoTexture, ccvVideoTexture) {
 					var material = new THREE.MeshBasicMaterial({
 						map: videoTexture,
-						overdraw: true,
 						// side:THREE.DoubleSide
 					});
 					var geometry = new THREE.PlaneGeometry(12, 9, 1, 1);
@@ -2219,8 +2218,7 @@ if (window.JoclyXdViewCleanup)
 				scale: [1, 1, 1],
 				makeMesh: function (videoTexture) {
 					var material = new THREE.MeshBasicMaterial({
-						map: videoTexture,
-						overdraw: true,
+						map: videoTexture
 					});
 					var geometry = new THREE.PlaneGeometry(this.options.width * this.SCALE3D, this.options.height * this.SCALE3D, 1, 1);
 					var mesh = new THREE.Mesh(geometry, material);
