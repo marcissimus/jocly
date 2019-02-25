@@ -303,7 +303,7 @@ gulp.task("build-browser-xdview", function () {
 	const nmLib = "node_modules/";
 
 	var libs = ProcessJS(gulp.src([
-		lib + "three.js",
+		nmLib + "three/build/three.js",
 		nmLib + "jquery/dist/jquery.js"
 	]));
 
