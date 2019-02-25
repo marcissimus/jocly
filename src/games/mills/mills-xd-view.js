@@ -97,7 +97,7 @@
 						shininess:shininess,
 						map:textureDiffB});
 
-					var pieceMat=new THREE.MultiMaterial([matborder,mattop]);
+					var pieceMat=[matborder,mattop];
 
 					callback({geometry:pieceGeo,material:pieceMat});
 
@@ -487,7 +487,7 @@
 									mat.shininess=40;
 								}
 							}
-						var board=new THREE.Mesh(geometry,new THREE.MultiMaterial( materials ));
+						var board=new THREE.Mesh(geometry, materials);
 
 						var cylGeo=new THREE.SphereGeometry(0.15, 32, 32);
 						var cylMat=new THREE.MeshPhongMaterial( { color: 0x000000 , specular: 0x030303, shininess  : 500 } );
@@ -557,7 +557,7 @@
 		var millsCreateScreen = function(videoTexture) {
 			// flat screens
 			var gg=new THREE.PlaneGeometry(4,3,1,1);
-			var gm=new THREE.MeshPhongMaterial({color:0xffffff,map:videoTexture,shading:THREE.FlatShading,emissive:{r:1,g:1,b:1}});
+			var gm=new THREE.MeshPhongMaterial({color:0xffffff,map:videoTexture,flatShading:THREE.FlatShading,emissive:{r:1,g:1,b:1}});
 			var mesh = new THREE.Mesh( gg , gm );
 			this.objectReady(mesh);
 			return null;

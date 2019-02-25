@@ -163,7 +163,7 @@
 
 					var matBlueFlat = new THREE.MeshPhongMaterial( {
 						wireframe: false ,
-						shading: THREE.FlatShading ,
+						flatShading: THREE.FlatShading ,
 						color: connect4Color,
 						specular: 0x111111,
 						shininess:40,
@@ -195,7 +195,7 @@
 								for (var c = 0 ; c < NBCOLS ; c++ ){
 									var mesh = new THREE.Mesh( geometry , new THREE.MeshPhongMaterial( {
 												wireframe: false ,
-												shading: THREE.SmoothShading ,
+												flatShading: THREE.SmoothShading ,
 												color: connect4Color,
 												specular: 0x333333,
 											} ) );
@@ -423,11 +423,11 @@
  						materials0.push(mat);
                     }else{
 	 					var mat=materials[i].clone();
-	 					mat.shading=THREE.FlatShading;
+	 					mat.flatShading=THREE.FlatShading;
 	 					materials0.push(mat);
                     }
  				}
- 				var mesh = new THREE.Mesh( geometry , new THREE.MultiMaterial( materials0 ) );
+ 				var mesh = new THREE.Mesh( geometry , materials0 );
 
  				mesh.visible = false;
  				$this.objectReady(mesh);

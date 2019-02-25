@@ -467,7 +467,7 @@
 	View.Game.cbCreateScreen = function(videoTexture) {
 		// flat screens
 		var gg=new THREE.PlaneGeometry(4,3,1,1);
-		var gm=new THREE.MeshPhongMaterial({color:0xffffff,map:videoTexture,shading:THREE.FlatShading,emissive:{r:1,g:1,b:1}});
+		var gm=new THREE.MeshPhongMaterial({color:0xffffff,map:videoTexture,flatShading:THREE.FlatShading,emissive:{r:1,g:1,b:1}});
 		var mesh = new THREE.Mesh( gg , gm );
 		this.objectReady(mesh);
 		return null;
