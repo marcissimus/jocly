@@ -131,7 +131,7 @@ JoclyAR = (function($) {
                 processing = false;
                 var message = e.data;
                 switch(message.type) {
-                    case "Pose": 
+                    case "Pose":
                         var rotation = message.rotation;
                         var translation = message.translation;
 
@@ -143,14 +143,14 @@ JoclyAR = (function($) {
                         threeCtx.harbor.rotation.set(
                             -Math.asin(-rotation[1][2]),
                             Math.atan2(rotation[1][0], rotation[1][1]),
-                            -Math.atan2(rotation[0][2], rotation[2][2])                            
+                            -Math.atan2(rotation[0][2], rotation[2][2])
                         );
                         threeCtx.harbor.position.set(
                             translation[0],
                             -translation[2],
-                            -translation[1]                            
+                            -translation[1]
                         );
-                        if(!threeCtx.harbor.position.equals(oposition) || 
+                        if(!threeCtx.harbor.position.equals(oposition) ||
                             !threeCtx.harbor.rotation.equals(oeuler))
                             threeCtx.animControl.trigger();
                         oposition.copy(threeCtx.harbor.position);
