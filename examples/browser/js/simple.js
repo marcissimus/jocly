@@ -40,7 +40,7 @@ function RunMatch(match, progressBar) {
                         return match.getFinished()
                     })
                     .then( (result) => {
-                        if(result.finished){
+                        if(result.finished)
                             NotifyWinner(result.winner);
                         else
                             NextMove();
