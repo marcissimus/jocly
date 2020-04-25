@@ -12,7 +12,7 @@ const rename = require("gulp-rename");
 const concat = require('gulp-concat');
 const add = require('gulp-add');
 const sourcemaps = require('gulp-sourcemaps');
-const runSequence = require('run-sequence');
+const runSequence = require('gulp4-run-sequence');
 const uglify = require('gulp-uglify');
 const babel = require('gulp-babel');
 const browserify = require('browserify');
@@ -90,7 +90,7 @@ function HandleModuleGames(modelOnly) {
 			// create the game config file
 			push(new Vinyl({
 				path: moduleName + "/" + game.name + "-config.js",
-				contents: new Buffer('exports.config = ' + JSON.stringify(game.config))
+				contents: new Buffer.from('exports.config = ' + JSON.stringify(game.config))
 			}));
 
 			// create some specified resources
@@ -114,16 +114,18 @@ function HandleModuleGames(modelOnly) {
 						files = files.map((file) => {
 							return path.join(modulesMap[moduleName], file);
 						});
-						var stream = gulp.src(files)
-							.pipe(rename(function (path) {
-								path.dirname = moduleName;
-							}))
-							.pipe(through.obj(function (file, enc, next) {
-								push(file);
-								next();
-							}))
-							;
-						streams.push(stream);
+						if (Array.isArray(files) && files.length) {
+							var stream = gulp.src(files, {allowEmpty: true} )
+								.pipe(rename(function (path) {
+									path.dirname = moduleName;
+								}))
+								.pipe(through.obj(function (file, enc, next) {
+									push(file);
+									next();
+								}))
+								;
+							streams.push(stream);
+						}
 					});
 				});
 			}
