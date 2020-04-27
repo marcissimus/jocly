@@ -32,7 +32,7 @@
 	// useful to initialize pieces and board while the real meshes aren't loaded yet
 	View.Game.cbMakeDummyMesh = function(xdv) {
 		if(typeof THREE != "undefined")
-		    return new THREE.Mesh( new THREE.CubeGeometry( .0001, .0001, .0001 ),
+		    return new THREE.Mesh( new THREE.BoxBufferGeometry( .0001, .0001, .0001 ),
 					      new THREE.MeshLambertMaterial() );
 		else
 			return null;
@@ -1042,7 +1042,7 @@
 		"default": {
 			mesh: {
 				jsFile: function(spec,callback) {
-					callback(new THREE.CubeGeometry(1,1,1),new THREE.MeshPhongMaterial({}));
+					callback(new THREE.BoxBufferGeometry(1,1,1),new THREE.MeshPhongMaterial({}));
 				},
 				smooth: 0,
 				rotateZ: 0,
