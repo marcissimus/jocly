@@ -53,7 +53,7 @@
 	// useful to initialize pieces and board while the real meshes aren't loaded yet
 	View.Game.chMakeDummyMesh = function(xdv) {
 		if(typeof THREE != "undefined")
-		    return new THREE.Mesh( new THREE.CubeGeometry( .001,.001,.001 ),
+		    return new THREE.Mesh( new THREE.BoxBufferGeometry( .001,.001,.001 ),
 					      new THREE.MeshLambertMaterial() );
 		else
 			return null;
