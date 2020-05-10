@@ -477,7 +477,7 @@
 		createInnerMesh: function(spec,callback) {
 			var cSize = this.cbCSize(spec);
 			var factor = .99;
-			var insideGeo = new THREE.CubeGeometry( factor*NBCOLS*cSize.cellSize/1000, factor*NBFLOORS*cSize.cellSize/1000, factor*NBROWS*cSize.cellSize/1000 );
+			var insideGeo = new THREE.BoxBufferGeometry( factor*NBCOLS*cSize.cellSize/1000, factor*NBFLOORS*cSize.cellSize/1000, factor*NBROWS*cSize.cellSize/1000 );
 			var insideMesh = new THREE.Mesh(insideGeo,new THREE.MeshPhongMaterial({color:0x000000,transparent:true,opacity:.9}));
 			insideMesh.castShadow = true;
 			callback(insideMesh);
