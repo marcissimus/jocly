@@ -83,6 +83,7 @@ JocGame.prototype.Init = function(aOptions) {
 		this.mNotation=false;
 		this.mShowMoves=this.mViewOptions.useShowMoves;
 		this.mSounds=!!this.mViewOptions.sounds;
+		this.mAnaglyph=false; 
 		this.mAutoComplete=false;
 
 		if(typeof(this.mOptions.level)!="undefined")
