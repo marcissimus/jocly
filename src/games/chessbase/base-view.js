@@ -726,16 +726,22 @@
 		});
 	}
 
-	View.Board.xdShowEnd=function(xdv, aGame) {
-		var message = "endscreen-draw";
-		var winner = aGame.mBoard.mWinner;
+	View.Board.xdShowEnd=function(xdv, aGame, vis) {
+		if (vis) {
+			var message = "endscreen-draw";
+			var winner = aGame.mBoard.mWinner;
 
-		if(winner === JocGame.PLAYER_A)
-			message = "endscreen-win";
-		else if(winner === JocGame.PLAYER_B)
-			message = "endscreen-lose";
+			if(winner === JocGame.PLAYER_A)
+				message = "endscreen-win";
+			else if(winner === JocGame.PLAYER_B)
+				message = "endscreen-lose";
 
-		xdv.updateGadget(message,{"3d":{visible:true}});
+			xdv.updateGadget(message,{"3d":{visible:true}});
+		} else {
+			xdv.updateGadget("endscreen-draw",{"3d":{visible:false}});
+			xdv.updateGadget("endscreen-win",{"3d":{visible:false}});
+			xdv.updateGadget("endscreen-lose",{"3d":{visible:false}});
+		}
 
 		return false;
 	}
