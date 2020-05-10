@@ -428,7 +428,7 @@
 		createFenceGeometry: function(spec,fence,callback) {
 			var cSize = this.cbCSize(spec);
 			var fData = cSize.fences[fence] || {};
-			var geo = new THREE.CubeGeometry( cSize.fenceWidth/1000, fData.height/1000, cSize.fenceWidth/1000 );
+			var geo = new THREE.BoxBufferGeometry( cSize.fenceWidth/1000, fData.height/1000, cSize.fenceWidth/1000 );
 
 			
 			var matrix = new THREE.Matrix4();
