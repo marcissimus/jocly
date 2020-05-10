@@ -1223,7 +1223,13 @@
 	    			}
 	    			pieceMaterials.push(newMat);
 	    		}
-				var pieceMat = new THREE.MultiMaterial( pieceMaterials );
+				var pieceMat = pieceMaterials;
+				pieceMat.isMultiMaterial = true;
+				pieceMat.materials = pieceMaterials;
+				pieceMat.clone = function () {
+					return pieceMat.slice();
+				};
+
 				resources.material=pieceMat;
 			},
 
