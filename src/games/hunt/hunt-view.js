@@ -447,7 +447,7 @@ View.Board.PlayedMove=function(aGame,aMove) {
 	return false;
 }
 
-View.Board.ShowEnd=function(aGame) {
+View.Board.ShowEnd=function(aGame, vis) {
 	return true;
 }
 
