@@ -922,6 +922,17 @@
 			return ProxiedMethod(this, "getConfig");
 	}
 
+	GameProxy.prototype.showEnd = function (vis) {
+		if (this.game) {
+			var self = this;
+			var promise = new Promise(function (resolve, reject) {
+				self.game.ShowEnd(vis);
+				resolve();
+			});
+			return promise;
+		} else return ProxiedMethod(this, "showEnd", arguments);
+	};
+
 	GameProxy.prototype.viewAs = function (player) {
 		if (jsContext == "node")
 			return Promise.reject(new Error("viewAs(): not supported in node.js"));
