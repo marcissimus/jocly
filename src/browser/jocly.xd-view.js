@@ -3206,12 +3206,12 @@ if (window.JoclyXdViewCleanup)
 		return this.xdPlayedMove(xdv, aGame, aMove);
 	}
 
-	View.Board.xdShowEnd = function (xdv, aGame) {
+	View.Board.xdShowEnd = function (xdv, aGame, vis) {
 		return true;
 	}
 
-	View.Board.ShowEnd = function (aGame) {
-		return this.xdShowEnd(xdv, aGame);
+	View.Board.ShowEnd = function (aGame, vis) {
+		return this.xdShowEnd(xdv, aGame, vis);
 	}
 
 	/* ======================================== */
