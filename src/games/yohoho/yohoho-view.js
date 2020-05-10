@@ -377,6 +377,6 @@ View.Board.PlayedMove=function(aGame,aMove) {
  * if it returns false, the implementation must ensure it will call aMoveDoneFnt to resume 
  * the game. 
  */
-View.Board.ShowEnd=function(aGame) {
+View.Board.ShowEnd=function(aGame, vis) {
 	return true;
 }
