@@ -616,7 +616,7 @@
 	
 					} ),
 	
-					mesh = new THREE.Mesh( new THREE.CubeGeometry( 3000, 3000, 3000 ), material );
+					mesh = new THREE.Mesh( new THREE.BoxBufferGeometry( 3000, 3000, 3000 ), material );
 					return mesh;
 				},			
 			},
