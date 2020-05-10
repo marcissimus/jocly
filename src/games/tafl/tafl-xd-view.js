@@ -223,8 +223,14 @@
 	 						materials0.push(mat);
 	 					}
 
+						var pieceMat = materials0;
+						pieceMat.isMultiMaterial = true;
+						pieceMat.materials = materials0;
+						pieceMat.clone = function () {
+							return pieceMat.slice();
+						};
 
-						var board = new THREE.Mesh( geometry , new THREE.MultiMaterial(materials0));	
+						var board = new THREE.Mesh( geometry , pieceMat);	
 						//board.overdraw = true;
 					      
 	  					callback(board);
@@ -439,8 +445,14 @@
 	 						materials0.push(mat);
 	 					}
 
+						var pieceMat = materials0;
+						pieceMat.isMultiMaterial = true;
+						pieceMat.materials = materials0;
+						pieceMat.clone = function () {
+							return pieceMat.slice();
+						};
 
-						var piece = new THREE.Mesh( geometry , new THREE.MultiMaterial(materials0));	
+						var piece = new THREE.Mesh( geometry , pieceMat);	
 						//board.overdraw = true;
 					      
 	  					callback(piece);
