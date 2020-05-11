@@ -235,7 +235,13 @@
                                     var materials1=[];
                                     function Done() {
                                         if(--tasks==0) {
-                                            var mesh = new THREE.Mesh( geometry0 , new THREE.MultiMaterial(materials1) ) ;
+											var multiMat = materials1;
+											multiMat.isMultiMaterial = true;
+											multiMat.materials = materials1;
+											multiMat.clone = function () {
+												return multiMat.slice();
+											};						
+                                            var mesh = new THREE.Mesh( geometry0 , multiMat ) ;
                                             cb(mesh);
                                         }
                                     }
@@ -369,7 +375,13 @@
  						materials0.push(materials[i]);
  					}
  				}
- 				var mesh = new THREE.Mesh( geometry , new THREE.MultiMaterial( materials0 ) );
+				var multiMat = materials0;
+				multiMat.isMultiMaterial = true;
+				multiMat.materials = materials0;
+				multiMat.clone = function () {
+					return multiMat.slice();
+				};					
+				var mesh = new THREE.Mesh( geometry , multiMat );
  				
  				var light = new THREE.SpotLight( 0xffffff, 5 );
 				//light.castShadow = true;
