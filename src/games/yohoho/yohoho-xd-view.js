@@ -509,7 +509,14 @@ TWEEN= typeof TWEEN=="undefined" ? { Easing: { Cubic: {}, Quartic: {}, } } : TWE
  						materials0.push(materials[i]);
  					}
  				}
- 				var mesh = new THREE.Mesh( geometry , new THREE.MultiMaterial( materials0 ) );
+				var multiMat = materials0;
+				multiMat.isMultiMaterial = true;
+				multiMat.materials = materials0;
+				multiMat.clone = function () {
+					return multiMat.slice();
+				};
+				
+ 				var mesh = new THREE.Mesh( geometry , multiMat );
 
  				mesh.visible = false;
  				$this.objectReady(mesh);
