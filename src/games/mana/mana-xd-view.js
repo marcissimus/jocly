@@ -336,8 +336,14 @@
 					}
 					materials0.push(mat);
 				}
+				var multiMat = materials0;
+				multiMat.isMultiMaterial = true;
+				multiMat.materials = materials0;
+				multiMat.clone = function () {
+					return multiMat.slice();
+				};
 				
-				var pawn = new THREE.Mesh(geometry, new THREE.MultiMaterial(materials0));
+				var pawn = new THREE.Mesh(geometry, multiMat);
 				pawn.castShadow=true;
 				callback(pawn);
 			});
