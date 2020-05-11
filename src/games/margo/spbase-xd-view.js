@@ -189,7 +189,14 @@
  						materials0.push(materials[i]);
  					}
  				}
- 				var mesh = new THREE.Mesh( geometry , new THREE.MultiMaterial( materials0 ) );
+				var multiMat = materials0;
+				multiMat.isMultiMaterial = true;
+				multiMat.materials = materials0;
+				multiMat.clone = function () {
+					return multiMat.slice();
+				};
+				
+ 				var mesh = new THREE.Mesh( geometry , multiMat );
  				
  				mesh.visible = false;
  				$this.objectReady(mesh);
@@ -396,7 +403,13 @@
 	                        for(var i=0;i<geometry.faces.length;i++) {
 	                        	geometry.faces[i].materialIndex=0;
 	                        }
-	                        var sphere = new THREE.Mesh(geometry,new THREE.MultiMaterial( [sphereMaterial] ));
+				var multiMat = [sphereMaterial];
+				multiMat.isMultiMaterial = true;
+				multiMat.materials = [sphereMaterial];
+				multiMat.clone = function () {
+					return multiMat.slice();
+				};
+	                        var sphere = new THREE.Mesh(geometry, multiMat);
 	                        return sphere;
 						},
 					},
